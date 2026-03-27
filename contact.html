@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | MoVets.org</title>
+  <meta name="description" content="Get in touch with MoVets.org or send a message to your Missouri state representative supporting HB2089.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="8" fill="#FF344C"/>
+          <path d="M10 18L14 10L18 18L22 10L26 18" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 24H28" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        MoVets
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about-bill.html">The Bill</a>
+        <a href="take-action.html">Take Action</a>
+        <a href="about.html">About</a>
+        <a href="contact.html" class="active">Contact</a>
+        <a href="data-sources.html">Data &amp; Sources</a>
+      </div>
+      <a href="take-action.html" class="btn btn-primary btn-sm nav-cta">Take Action</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="about-bill.html">The Bill</a>
+    <a href="take-action.html">Take Action</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="data-sources.html">Data &amp; Sources</a>
+  </div>
+
+  <main>
+    <!-- Page Header -->
+    <div class="page-header">
+      <span class="section-tag">Get in Touch</span>
+      <h1>Contact Us</h1>
+      <p>Questions about HB2089 or MoVets.org? We'd love to hear from you.</p>
+    </div>
+
+    <!-- Contact Section -->
+    <section class="section">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;">
+        <!-- Info Side -->
+        <div>
+          <h2 class="section-heading" style="font-size:30px;line-height:40px;">We're here to help</h2>
+          <p style="font-size:18px;line-height:30px;color:#53565E;margin-bottom:40px;">
+            Whether you have questions about the bill, need help finding your representative, or want to get more involved, reach out anytime.
+          </p>
+
+          <div style="margin-bottom:32px;">
+            <div class="card" style="margin-bottom:16px;">
+              <div style="display:flex;gap:16px;align-items:center;">
+                <div style="width:48px;height:48px;background:#FFEFF1;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">&#9993;</div>
+                <div>
+                  <div style="font-weight:700;margin-bottom:2px;">Email</div>
+                  <a href="mailto:info@movets.org" style="color:#FF344C;font-size:15px;">info@movets.org</a>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div style="display:flex;gap:16px;align-items:center;">
+                <div style="width:48px;height:48px;background:#FFEFF1;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">&#127463;</div>
+                <div>
+                  <div style="font-weight:700;margin-bottom:2px;">Bill Information</div>
+                  <a href="https://house.mo.gov/Bill.aspx?bill=HB2089&year=2026" target="_blank" rel="noopener" style="color:#FF344C;font-size:15px;">house.mo.gov &mdash; HB2089</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background:#F7F8F9;border:none;">
+            <h3 style="font-size:18px;margin-bottom:12px;">Want to contact your rep directly?</h3>
+            <p style="font-size:15px;color:#717379;line-height:24px;margin-bottom:16px;">
+              Use our Take Action page to find your state representative on the map and send them a message supporting HB2089.
+            </p>
+            <a href="take-action.html" class="btn btn-primary btn-sm">Go to Take Action</a>
+          </div>
+        </div>
+
+        <!-- Form Side -->
+        <div>
+          <form id="contactForm" style="background:#F7F8F9;padding:40px;border-radius:16px;">
+            <!-- Honeypot -->
+            <div style="position:absolute;left:-9999px;" aria-hidden="true">
+              <label>Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+            </div>
+
+            <h3 style="font-size:22px;margin-bottom:24px;">Send us a message</h3>
+
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" name="name" required class="form-input" placeholder="Your full name">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" name="email" required class="form-input" placeholder="you@email.com">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Missouri ZIP Code</label>
+              <input type="text" name="zip" id="zipInput" required pattern="[0-9]{5}" maxlength="5" class="form-input" placeholder="65101">
+              <p id="repInfo" style="font-size:14px;color:#717379;margin-top:8px;"></p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">To Representative</label>
+              <input type="email" id="repEmail" class="form-input" readonly style="background:#F2F2F4;cursor:not-allowed;" placeholder="Enter your ZIP code above to find your representative">
+              <p id="repLabel" style="font-size:14px;color:#26385E;font-weight:600;margin-top:6px;"></p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea name="message" required rows="8" class="form-textarea" placeholder="Your message...">I support HB2089 – please help Missouri's disabled veterans by passing this bill. Fair property tax relief for those who served our country should be a priority.</textarea>
+            </div>
+
+            <div class="form-group" style="background:#FFEFF1;border-radius:12px;padding:20px;">
+              <label style="display:flex;gap:12px;align-items:start;cursor:pointer;font-size:15px;line-height:24px;color:#26385E;">
+                <input type="checkbox" id="includeRevisions" name="includeRevisions" style="margin-top:4px;width:18px;height:18px;accent-color:#FF344C;flex-shrink:0;">
+                <span><strong>Include proposed revisions in my message</strong><br>
+                <span style="font-size:13px;color:#717379;">Append the 7 recommended amendments (raise value cap to $350K, clarify disability eligibility, surviving spouse protections, vehicle exemption, and more). <a href="about-bill.html#revisions" style="color:#FF344C;">View details</a></span></span>
+              </label>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;">Send Message</button>
+            <p id="formStatus" style="text-align:center;margin-top:16px;font-size:15px;"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" style="color:#fff;margin-bottom:8px;">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="#FF344C"/>
+            <path d="M10 18L14 10L18 18L22 10L26 18" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 24H28" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          MoVets
+        </a>
+        <p>Supporting Missouri's disabled veterans through advocacy for HB2089.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="Twitter">X</a>
+        </div>
+      </div>
+      <div>
+        <h4>Pages</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about-bill.html">The Bill</a></li>
+          <li><a href="take-action.html">Take Action</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="data-sources.html">Data &amp; Sources</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="footer-links">
+          <li><a href="https://house.mo.gov/Bill.aspx?bill=HB2089&year=2026" target="_blank" rel="noopener">HB2089 Full Text</a></li>
+          <li><a href="https://house.mo.gov" target="_blank" rel="noopener">MO House</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Stay Updated</h4>
+        <p style="font-size:14px;color:#717379;margin-bottom:16px;">Get updates on HB2089 and how you can help.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault();">
+          <input type="email" placeholder="Your email address">
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 MoVets.org. Non-partisan veteran advocacy.</span>
+      <span>Not affiliated with the State of Missouri.</span>
+    </div>
+  </footer>
+
+  <script src="js/zip-lookup.js"></script>
+  <script src="js/contact.js"></script>
+  <script>
+    // Nav
+    window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10); });
+    const navToggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    navToggle.addEventListener('click', () => mobileNav.classList.toggle('open'));
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileNav.classList.remove('open')));
+
+    // ZIP lookup — populates rep email field
+    const zipInput = document.getElementById('zipInput');
+    const repInfo = document.getElementById('repInfo');
+    let lookupTimeout;
+    zipInput.addEventListener('input', () => {
+      clearTimeout(lookupTimeout);
+      const zip = zipInput.value.trim();
+      if (zip.length === 5 && /^\d{5}$/.test(zip)) {
+        repInfo.textContent = 'Looking up your representative...';
+        lookupTimeout = setTimeout(async () => {
+          const result = await lookupDistrictByZip(zip);
+          if (result && result.email) {
+            repInfo.innerHTML = `<span style="color:#26385E;font-weight:600;">District ${result.district} \u2014 Rep. ${result.rep_name}</span>`;
+            setRepFromLookup(result);
+          } else if (result) {
+            repInfo.textContent = 'District ' + result.district + ' \u2014 Seat currently vacant.';
+            setRepFromLookup(null);
+          } else {
+            repInfo.textContent = 'Could not determine district. Visit Take Action to browse the map.';
+            setRepFromLookup(null);
+          }
+        }, 500);
+      } else {
+        repInfo.textContent = '';
+        setRepFromLookup(null);
+      }
+    });
+  </script>
+</body>
+</html>

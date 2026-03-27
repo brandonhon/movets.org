@@ -1,0 +1,16 @@
+{
+  "name": "movets.org",
+  "version": "1.0.0",
+  "description": "### 🧱 Requirements",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tailwindcss -i ./tailwind.css -o ./css/styles.css --watch",
+    "build": "npx tailwindcss -i ./tailwind.css -o ./css/styles.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

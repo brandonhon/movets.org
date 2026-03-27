@@ -1,0 +1,7 @@
+node_modules/
+css/styles.css
+.DS_Store
+.claude/
+data/email_log.db
+data/email_log.csv
+data/email_dashboard.png

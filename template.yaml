@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: MoVets.org backend — API Gateway + Lambda + SES + DynamoDB logging
+
+Parameters:
+  FromEmail:
+    Type: String
+    Default: noreply@movets.org
+    Description: Verified SES sender email
+  AllowedOrigin:
+    Type: String
+    Default: https://movets.org
+    Description: CORS allowed origin
+
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: nodejs20.x
+    MemorySize: 128
+
+Resources:
+  EmailLogTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: movets-email-log
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  SendEmailFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda/send-email/
+      Handler: index.handler
+      Environment:
+        Variables:
+          FROM_EMAIL: !Ref FromEmail
+          ALLOWED_ORIGIN: !Ref AllowedOrigin
+          LOG_TABLE: !Ref EmailLogTable
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+              Resource: '*'
+        - DynamoDBCrudPolicy:
+            TableName: !Ref EmailLogTable
+      Events:
+        SendEmail:
+          Type: HttpApi
+          Properties:
+            Path: /send-email
+            Method: POST
+        SendEmailOptions:
+          Type: HttpApi
+          Properties:
+            Path: /send-email
+            Method: OPTIONS
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/send-email"
+  LogTableName:
+    Description: DynamoDB table for email logs
+    Value: !Ref EmailLogTable

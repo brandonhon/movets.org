@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Take Action | MoVets.org</title>
+  <meta name="description" content="Find your Missouri state representative on the district map and send them a message supporting HB2089.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="8" fill="#FF344C"/>
+          <path d="M10 18L14 10L18 18L22 10L26 18" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 24H28" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        MoVets
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about-bill.html">The Bill</a>
+        <a href="take-action.html" class="active">Take Action</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="data-sources.html">Data &amp; Sources</a>
+      </div>
+      <a href="take-action.html" class="btn btn-primary btn-sm nav-cta">Take Action</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="about-bill.html">The Bill</a>
+    <a href="take-action.html">Take Action</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="data-sources.html">Data &amp; Sources</a>
+  </div>
+
+  <main>
+    <!-- Page Header -->
+    <div class="page-header">
+      <span class="section-tag">Make Your Voice Heard</span>
+      <h1>Take Action</h1>
+      <p>Find your representative on the map and send them a message of support for HB2089.</p>
+    </div>
+
+    <!-- Map Section -->
+    <section id="map-section" class="section" style="padding-bottom:40px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <span class="section-tag">Interactive Map</span>
+        <h2 class="section-heading">Find Your Representative</h2>
+      </div>
+
+      <!-- ZIP Search -->
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;margin-bottom:24px;">
+        <input
+          type="text"
+          id="zipLookup"
+          placeholder="Enter your ZIP code"
+          maxlength="5"
+          class="form-input"
+          style="max-width:200px;"
+        >
+        <button id="findBtn" type="button" class="btn btn-primary btn-sm">Find My District</button>
+        <button id="resetBtn" type="button" class="btn btn-outline btn-sm" style="display:none;">Reset Map</button>
+        <p id="mapStatus" style="width:100%;text-align:center;font-size:15px;margin:0;"></p>
+      </div>
+
+      <div id="map" style="border:1px solid #E0E2E7;"></div>
+    </section>
+
+    <!-- Contact Form -->
+    <section id="contact-form" style="background:#F7F8F9;padding:100px 24px;">
+      <div style="max-width:640px;margin:0 auto;">
+        <div style="text-align:center;margin-bottom:40px;">
+          <span class="section-tag">Send a Message</span>
+          <h2 class="section-heading">Contact Your Representative</h2>
+          <p class="section-subheading" style="margin:0 auto;">Let your state representative know you support HB2089.</p>
+        </div>
+
+        <form id="contactForm" style="background:#fff;padding:40px;border-radius:16px;border:1px solid #E0E2E7;">
+          <!-- Honeypot -->
+          <div style="position:absolute;left:-9999px;" aria-hidden="true">
+            <label>Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="name" required class="form-input" placeholder="Your full name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" required class="form-input" placeholder="you@email.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Missouri ZIP Code</label>
+            <input type="text" name="zip" id="zipInput" required pattern="[0-9]{5}" maxlength="5" class="form-input" placeholder="65101">
+            <p id="repInfo" style="font-size:14px;color:#717379;margin-top:8px;"></p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">To Representative</label>
+            <input type="email" id="repEmail" class="form-input" readonly style="background:#F2F2F4;cursor:not-allowed;" placeholder="Enter your ZIP code above to find your representative">
+            <p id="repLabel" style="font-size:14px;color:#26385E;font-weight:600;margin-top:6px;"></p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Your Message</label>
+            <textarea name="message" required rows="8" class="form-textarea">I support HB2089 – please help Missouri's disabled veterans by passing this bill. Fair property tax relief for those who served our country should be a priority.</textarea>
+          </div>
+
+          <div class="form-group" style="background:#FFEFF1;border-radius:12px;padding:20px;">
+            <label style="display:flex;gap:12px;align-items:start;cursor:pointer;font-size:15px;line-height:24px;color:#26385E;">
+              <input type="checkbox" id="includeRevisions" name="includeRevisions" style="margin-top:4px;width:18px;height:18px;accent-color:#FF344C;flex-shrink:0;">
+              <span><strong>Include proposed revisions in my message</strong><br>
+              <span style="font-size:13px;color:#717379;">Append the 7 recommended amendments (raise value cap to $350K, clarify disability eligibility, surviving spouse protections, vehicle exemption, and more). <a href="about-bill.html#revisions" style="color:#FF344C;">View details</a></span></span>
+            </label>
+          </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button type="submit" id="submitBtn" class="btn btn-primary btn-lg" style="flex:1;">Send Message</button>
+            <button type="button" id="previewBtn" class="btn btn-outline btn-lg" style="flex:0 0 auto;">Preview Emails</button>
+          </div>
+          <p id="formStatus" style="text-align:center;margin-top:16px;font-size:15px;"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Email Preview Modal -->
+    <div id="previewModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(14,18,30,0.6);backdrop-filter:blur(4px);overflow-y:auto;padding:40px 16px;">
+      <div style="max-width:720px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;">
+        <div style="background:#26385E;color:#fff;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;">
+          <h3 style="color:#fff;font-size:20px;margin:0;">Email Preview</h3>
+          <button id="closePreview" type="button" style="background:none;border:none;color:#fff;font-size:28px;cursor:pointer;line-height:1;">&times;</button>
+        </div>
+        <div style="padding:28px;">
+          <h4 style="font-size:16px;color:#FF344C;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;">Email to Representative</h4>
+          <div id="previewRep" style="background:#F7F8F9;border-radius:12px;padding:20px;font-size:14px;line-height:22px;"></div>
+        </div>
+        <div style="padding:0 28px 28px;text-align:right;">
+          <button id="closePreview2" type="button" class="btn btn-secondary btn-sm">Close</button>
+        </div>
+      </div>
+    </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" style="color:#fff;margin-bottom:8px;">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="#FF344C"/>
+            <path d="M10 18L14 10L18 18L22 10L26 18" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 24H28" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          MoVets
+        </a>
+        <p>Supporting Missouri's disabled veterans through advocacy for HB2089.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="Twitter">X</a>
+        </div>
+      </div>
+      <div>
+        <h4>Pages</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about-bill.html">The Bill</a></li>
+          <li><a href="take-action.html">Take Action</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="data-sources.html">Data &amp; Sources</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="footer-links">
+          <li><a href="https://house.mo.gov/Bill.aspx?bill=HB2089&year=2026" target="_blank" rel="noopener">HB2089 Full Text</a></li>
+          <li><a href="https://house.mo.gov" target="_blank" rel="noopener">MO House</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Stay Updated</h4>
+        <p style="font-size:14px;color:#717379;margin-bottom:16px;">Get updates on HB2089 and how you can help.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault();">
+          <input type="email" placeholder="Your email address">
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 MoVets.org. Non-partisan veteran advocacy.</span>
+      <span>Not affiliated with the State of Missouri.</span>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/zip-lookup.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/contact.js"></script>
+  <script>
+    // Nav
+    window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10); });
+    const navToggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    navToggle.addEventListener('click', () => mobileNav.classList.toggle('open'));
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileNav.classList.remove('open')));
+
+    // ZIP lookup on map
+    const findBtn = document.getElementById('findBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const zipField = document.getElementById('zipLookup');
+    const mapStatus = document.getElementById('mapStatus');
+
+    findBtn.addEventListener('click', async () => {
+      const zip = zipField.value.trim();
+      if (!/^\d{5}$/.test(zip)) {
+        mapStatus.textContent = 'Please enter a valid 5-digit ZIP code.';
+        mapStatus.style.color = '#DC1E35';
+        return;
+      }
+      mapStatus.textContent = 'Searching...';
+      mapStatus.style.color = '#717379';
+      findBtn.textContent = 'Searching...';
+      findBtn.disabled = true;
+
+      const result = await lookupDistrictByZip(zip);
+
+      findBtn.textContent = 'Find My District';
+      findBtn.disabled = false;
+
+      if (result) {
+        const repText = result.rep_name && result.rep_name !== 'Vacant'
+          ? ` \u2014 Rep. ${result.rep_name} (${result.party === 'D' ? 'Democrat' : 'Republican'})`
+          : ' \u2014 Seat Vacant';
+        mapStatus.innerHTML = `<span style="color:#26385E;font-weight:600;">District ${result.district}${repText}</span>`;
+        highlightDistrict(result.district);
+        resetBtn.style.display = '';
+      } else {
+        mapStatus.textContent = 'Could not find a district for that ZIP code. Try clicking your area on the map.';
+        mapStatus.style.color = '#DC1E35';
+      }
+    });
+
+    zipField.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); findBtn.click(); }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      resetMap();
+      zipField.value = '';
+      mapStatus.textContent = '';
+      resetBtn.style.display = 'none';
+    });
+
+    // ZIP lookup on contact form — populates rep email field
+    const zipInput = document.getElementById('zipInput');
+    const repInfo = document.getElementById('repInfo');
+    let lookupTimeout;
+    zipInput.addEventListener('input', () => {
+      clearTimeout(lookupTimeout);
+      const zip = zipInput.value.trim();
+      if (zip.length === 5 && /^\d{5}$/.test(zip)) {
+        repInfo.textContent = 'Looking up your representative...';
+        lookupTimeout = setTimeout(async () => {
+          const result = await lookupDistrictByZip(zip);
+          if (result && result.email) {
+            repInfo.innerHTML = `<span style="color:#26385E;font-weight:600;">District ${result.district} \u2014 Rep. ${result.rep_name}</span>`;
+            setRepFromLookup(result);
+          } else if (result) {
+            repInfo.textContent = 'District ' + result.district + ' \u2014 Seat currently vacant.';
+            setRepFromLookup(null);
+          } else {
+            repInfo.textContent = 'Could not determine district. Browse the map above to find your rep.';
+            setRepFromLookup(null);
+          }
+        }, 500);
+      } else {
+        repInfo.textContent = '';
+        setRepFromLookup(null);
+      }
+    });
+
+    // Email preview modal
+    function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+
+    function renderPreviewBlock(data) {
+      return `<div style="margin-bottom:12px;"><strong style="color:#26385E;">From:</strong> ${escHtml(data.from)}</div>` +
+        `<div style="margin-bottom:12px;"><strong style="color:#26385E;">To:</strong> ${escHtml(data.to)}</div>` +
+        `<div style="margin-bottom:12px;"><strong style="color:#26385E;">Subject:</strong> ${escHtml(data.subject)}</div>` +
+        `<div style="border-top:1px solid #E0E2E7;padding-top:12px;margin-top:4px;white-space:pre-wrap;word-break:break-word;">${escHtml(data.body)}</div>`;
+    }
+
+    document.getElementById('previewBtn').addEventListener('click', () => {
+      const preview = getEmailPreview();
+      document.getElementById('previewRep').innerHTML = renderPreviewBlock(preview.toRep);
+      document.getElementById('previewModal').style.display = '';
+      document.body.style.overflow = 'hidden';
+    });
+
+    function closeModal() {
+      document.getElementById('previewModal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    document.getElementById('closePreview').addEventListener('click', closeModal);
+    document.getElementById('closePreview2').addEventListener('click', closeModal);
+    document.getElementById('previewModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+  </script>
+</body>
+</html>
