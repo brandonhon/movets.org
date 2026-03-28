@@ -4,13 +4,18 @@
   "description": "### 🧱 Requirements",
   "main": "index.js",
   "scripts": {
-    "dev": "npx tailwindcss -i ./tailwind.css -o ./css/styles.css --watch",
-    "build": "npx tailwindcss -i ./tailwind.css -o ./css/styles.css --minify"
+    "dev": "npx tailwindcss -i ./tailwind.css -o ./site/css/styles.css --watch",
+    "build": "npx tailwindcss -i ./tailwind.css -o ./site/css/styles.css --minify",
+    "check-links": "node scripts/check-links.js",
+    "serve": "npx serve site -l 8080"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "tailwindcss": "^3.4.19"
+  },
+  "dependencies": {
+    "serve": "^14.2.6"
   }
 }

@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -139,6 +140,10 @@
                 <span><strong>Include proposed revisions in my message</strong><br>
                 <span style="font-size:13px;color:#717379;">Append the 7 recommended amendments (raise value cap to $350K, clarify disability eligibility, surviving spouse protections, vehicle exemption, and more). <a href="about-bill.html#revisions" style="color:#FF344C;">View details</a></span></span>
               </label>
+            </div>
+
+            <div class="form-group" style="display:flex;justify-content:center;">
+              <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-theme="light"></div>
             </div>
 
             <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;">Send Message</button>

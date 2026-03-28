@@ -2,8 +2,8 @@ const form = document.getElementById('contactForm');
 const status = document.getElementById('formStatus');
 const submitBtn = document.getElementById('submitBtn');
 
-// TODO: Replace with your actual API Gateway URL after deploying the SAM template
-const API_URL = 'https://YOUR_API_GATEWAY_URL/send-email';
+// TODO: Replace with your Cloudflare Worker URL after deployment
+const API_URL = 'https://movets-api.YOUR_ACCOUNT.workers.dev/send-email';
 
 const DEFAULT_MESSAGE = 'I support HB2089 \u2013 please help Missouri\'s disabled veterans by passing this bill. Fair property tax relief for those who served our country should be a priority.';
 
@@ -150,6 +150,14 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
+  // Get Turnstile token
+  const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+  if (!turnstileToken) {
+    status.textContent = 'Please complete the CAPTCHA verification.';
+    status.style.color = '#DC1E35';
+    return;
+  }
+
   submitBtn.disabled = true;
   submitBtn.textContent = 'Sending...';
 
@@ -163,6 +171,7 @@ form.addEventListener('submit', async (e) => {
         repName: currentRep.name,
         district: String(currentRep.district),
         messageType: getMessageType(),
+        turnstileToken,
       }),
     });
 
@@ -178,6 +187,7 @@ form.addEventListener('submit', async (e) => {
       const repLabel = document.getElementById('repLabel');
       if (repField) repField.value = '';
       if (repLabel) repLabel.textContent = 'Enter your ZIP code above to find your representative';
+      if (typeof turnstile !== 'undefined') turnstile.reset();
     } else {
       status.textContent = data.error || 'Failed to send. Please try again later.';
       status.style.color = '#DC1E35';

@@ -1,0 +1,14 @@
+{
+  "name": "movets-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute movets-email-log --file=schema.sql",
+    "db:init:local": "wrangler d1 execute movets-email-log --local --file=schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

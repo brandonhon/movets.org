@@ -1,7 +1,15 @@
 node_modules/
-css/styles.css
+site/css/styles.css
 .DS_Store
 .claude/
-data/email_log.db
-data/email_log.csv
-data/email_dashboard.png
+.venv/
+*.pyc
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate*
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
+
+# Docker
+.docker/

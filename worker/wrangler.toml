@@ -1,0 +1,17 @@
+name = "movets-api"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+FROM_EMAIL = "noreply@movets.org"
+FROM_NAME = "MoVets.org"
+ALLOWED_ORIGIN = "https://movets.org"
+
+# Secrets (set via `wrangler secret put`):
+#   BREVO_API_KEY
+#   TURNSTILE_SECRET_KEY
+
+[[d1_databases]]
+binding = "DB"
+database_name = "movets-email-log"
+database_id = "your-d1-database-id"
