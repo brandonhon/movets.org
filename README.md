@@ -68,6 +68,7 @@ Open http://localhost:8080
 │   ├── css/
 │   │   ├── style.css                  # Custom theme (Politician X)
 │   │   └── styles.css                 # Tailwind output (generated)
+│   ├── icons/                         # Flaticon.com PNG icons (512x512)
 │   ├── js/
 │   │   ├── contact.js                 # Form handler + Turnstile
 │   │   ├── subscribe.js               # Newsletter subscription
@@ -88,6 +89,7 @@ Open http://localhost:8080
 ├── scripts/
 │   ├── merge-reps.js                  # Merge rep data into GeoJSON
 │   ├── check-links.js                 # Link checker
+│   ├── visualize.js                   # D1 database dashboard + CSV export
 │   ├── send-newsletter.js             # Send newsletter to subscribers
 │   ├── newsletter-template.html       # Newsletter HTML template
 │   ├── newsletter-example.html        # Example newsletter content
@@ -202,10 +204,37 @@ make serve         # Serve site locally (port 8080)
 make docker        # Build Docker image
 make docker-run    # Build + run Docker container
 make check-links       # Check all internal/external links
+make dashboard         # Show email + subscriber stats from D1
+make dashboard-emails  # Email stats only
+make dashboard-subs    # Subscriber stats only
+make export-csv        # Export emails and subscribers to CSV
 make newsletter-preview # Dry-run newsletter (no emails sent)
 make newsletter-send   # Send newsletter to all subscribers
 make deploy-worker     # Deploy Cloudflare Worker
 make deploy-infra      # Apply Terraform
+```
+
+## Dashboard
+
+View email activity and subscriber stats from the D1 database.
+
+```bash
+# Set environment variables (same for dashboard, newsletter, and CSV export)
+export CLOUDFLARE_ACCOUNT_ID="your-account-id"
+export CLOUDFLARE_API_TOKEN="your-api-token"
+export D1_DATABASE_ID="your-d1-id"
+
+# Full dashboard (emails + subscribers)
+make dashboard
+
+# Email stats only
+make dashboard-emails
+
+# Subscriber stats only
+make dashboard-subs
+
+# Export both tables to CSV
+make export-csv
 ```
 
 ## Sending a Newsletter
