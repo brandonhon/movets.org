@@ -80,7 +80,7 @@ resource "cloudflare_pages_project" "site" {
   production_branch = "main"
 
   build_config {
-    build_command   = "npm run build"
+    build_command   = "npm run build:deploy"
     destination_dir = "site"
     root_dir        = ""
   }

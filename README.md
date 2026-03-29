@@ -92,6 +92,7 @@ Open http://localhost:8080
 ├── scripts/
 │   ├── merge-reps.js                  # Merge rep data into GeoJSON
 │   ├── check-links.js                 # Link checker
+│   ├── inject-env.js                  # Replace placeholders with env vars at build
 │   ├── visualize.js                   # D1 database dashboard + CSV export
 │   ├── send-newsletter.js             # Send newsletter to subscribers
 │   ├── newsletter-template.html       # Newsletter HTML template
@@ -119,7 +120,32 @@ Open http://localhost:8080
 - [Wrangler](https://developers.cloudflare.com/workers/wrangler/) (`npm i -g wrangler`)
 - Accounts: [Cloudflare](https://dash.cloudflare.com/sign-up) (free), [Brevo](https://app.brevo.com/account/register) (free)
 
-### Step 1: Cloudflare Setup
+### Step 1: GitHub Secrets & Variables
+
+Go to your repo **Settings > Secrets and variables > Actions** and add:
+
+**Secrets** (sensitive):
+
+| Secret | Value |
+|--------|-------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
+| `BREVO_API_KEY` | Brevo transactional email API key |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key |
+
+**Variables** (non-sensitive):
+
+| Variable | Value |
+|----------|-------|
+| `TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key |
+| `CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics token |
+| `WORKER_URL` | Worker URL (e.g. `https://movets-api.xxx.workers.dev`) |
+
+The Cloudflare Pages build uses `TURNSTILE_SITE_KEY`, `CF_ANALYTICS_TOKEN`, and `WORKER_URL` to inject values into the site HTML/JS at build time via `scripts/inject-env.js`.
+
+Set these same 3 variables in **Cloudflare Pages > your project > Settings > Environment variables** so they're available during the Pages build.
+
+### Step 2: Cloudflare Setup
 
 1. Create a free Cloudflare account
 2. Get your **Account ID** from Workers & Pages in the dashboard
@@ -167,16 +193,17 @@ wrangler secret put TURNSTILE_SECRET_KEY
 npm run deploy
 ```
 
-### Step 4: Update Frontend Config
+### Step 4: Frontend Config (Automatic)
 
-Replace these placeholders in the site files:
+Placeholders are replaced automatically at build time by `scripts/inject-env.js`. Set these environment variables in **Cloudflare Pages > Settings > Environment variables**:
 
-| Placeholder | File(s) | Replace With |
-|-------------|---------|-------------|
-| `YOUR_TURNSTILE_SITE_KEY` | `site/take-action.html`, `site/contact.html` | Turnstile site key |
-| `YOUR_CF_ANALYTICS_TOKEN` | All 6 HTML files | Cloudflare Web Analytics token |
-| `https://movets-api.YOUR_ACCOUNT.workers.dev/send-email` | `site/js/contact.js` | Worker URL |
-| `https://movets-api.YOUR_ACCOUNT.workers.dev/subscribe` | `site/js/subscribe.js` | Worker URL |
+| Variable | Replaces |
+|----------|----------|
+| `TURNSTILE_SITE_KEY` | `YOUR_TURNSTILE_SITE_KEY` in HTML |
+| `CF_ANALYTICS_TOKEN` | `YOUR_CF_ANALYTICS_TOKEN` in HTML |
+| `WORKER_URL` | API URLs in `contact.js` and `subscribe.js` |
+
+The build command (`npm run build:deploy`) runs Tailwind CSS then injects these values.
 
 ### Step 5: DNS Setup
 
