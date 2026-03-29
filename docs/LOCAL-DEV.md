@@ -16,6 +16,7 @@ ALLOWED_ORIGIN=http://localhost:8080
 DEV_MODE=true
 BREVO_API_KEY=your-brevo-api-key
 DEV_TEST_EMAIL=your-email@example.com
+DEV_CONTACT_EMAIL=your-email@example.com
 EOF
 
 # 3. Start the site (Terminal 1)
@@ -49,7 +50,8 @@ brew install --cask docker
 | `ALLOWED_ORIGIN` | Yes | CORS origin — must be `http://localhost:8080` |
 | `DEV_MODE` | Yes | Skips Turnstile, relaxes repEmail validation |
 | `BREVO_API_KEY` | Optional | Actually send emails; omit to just log to console |
-| `DEV_TEST_EMAIL` | Optional | Redirects all emails to this address instead of the rep |
+| `DEV_TEST_EMAIL` | Optional | Redirects Take Action emails to this address instead of the rep |
+| `DEV_CONTACT_EMAIL` | Optional | Redirects Contact page emails to this address instead of `info@movets.org` |
 
 ## How DEV_MODE Works
 
@@ -57,7 +59,8 @@ brew install --cask docker
 |---------|-----------|----------|
 | Turnstile CAPTCHA | Required | Skipped |
 | repEmail domain | Must be `@house.mo.gov` | Any valid email |
-| Email delivery | Sent to representative | Sent to `DEV_TEST_EMAIL` if set |
+| Take Action emails | Sent to representative | Sent to `DEV_TEST_EMAIL` if set |
+| Contact page emails | Sent to `info@movets.org` | Sent to `DEV_CONTACT_EMAIL` if set |
 | Console logging | Minimal | Full email details |
 | Geo-block | US only | Passes (no `request.cf` locally) |
 

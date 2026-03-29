@@ -114,10 +114,10 @@ git push -u origin my-feature
 │   ├── sitemap.xml                    # Sitemap for search engines
 │   ├── css/                           # Tailwind + custom CSS
 │   ├── icons/                         # Flaticon.com PNG icons
-│   ├── js/                            # contact.js, subscribe.js, map.js, zip-lookup.js
+│   ├── js/                            # contact.js, contact-general.js, subscribe.js, map.js, zip-lookup.js
 │   └── data/                          # GeoJSON district boundaries
 ├── worker/                            # Cloudflare Worker API
-│   ├── src/index.js                   # POST /send-email, POST /subscribe
+│   ├── src/index.js                   # POST /send-email, /subscribe, /contact
 │   ├── schema.sql                     # D1 database schema
 │   └── wrangler.toml                  # Worker config
 ├── terraform/                         # Cloudflare infrastructure (Worker, D1, Turnstile, Pages)
@@ -131,18 +131,27 @@ git push -u origin my-feature
 ## Makefile
 
 ```bash
-make help              # Show all commands
-make setup             # Install deps + init local D1
-make dev               # Tailwind watch + local server
-make worker            # Start local Worker
-make docker-run        # Build + run Docker container
-make dashboard         # Remote D1 stats
-make dashboard-local   # Local D1 stats
-make check-links       # Check all site links
-make newsletter-preview # Dry-run newsletter
-make newsletter-send   # Send newsletter to subscribers
-make db-reset          # Reset local D1 database
-make clean             # Remove build artifacts
+make help                # Show all commands
+make setup               # Install deps + init local D1
+make dev                 # Tailwind watch + local server
+make worker              # Start local Worker
+make build               # Build Tailwind CSS (production)
+make docker-run          # Build + run Docker container
+make check-links         # Check all site links
+make dashboard           # Remote D1 stats (emails + subscribers)
+make dashboard-emails    # Remote D1 email stats only
+make dashboard-subs      # Remote D1 subscriber stats only
+make dashboard-local     # Local D1 stats (emails + subscribers)
+make dashboard-local-emails  # Local D1 email stats only
+make dashboard-local-subs    # Local D1 subscriber stats only
+make export-csv          # Export remote D1 to CSV
+make export-csv-local    # Export local D1 to CSV
+make newsletter-preview  # Dry-run newsletter
+make newsletter-send     # Send newsletter to subscribers
+make deploy-worker       # Deploy Worker to production
+make deploy-infra        # Apply Terraform
+make db-reset            # Reset local D1 database
+make clean               # Remove build artifacts
 ```
 
 ## Anti-Spam

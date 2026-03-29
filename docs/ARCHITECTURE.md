@@ -140,8 +140,9 @@ node scripts/send-newsletter.js --subject "Title" --content content.html [--dry-
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
-| `/send-email` | POST | Contact form → representative email |
-| `/subscribe` | POST | Newsletter subscription |
+| `/send-email` | POST | Take Action form → representative email |
+| `/subscribe` | POST | Newsletter subscription + welcome email |
+| `/contact` | POST | Contact page form → `info@movets.org` |
 
 ---
 
@@ -218,14 +219,15 @@ movets.org/
 │   │   ├── style.css                  # Custom component CSS (~1300 lines)
 │   │   └── styles.css                 # Tailwind build output (generated)
 │   ├── js/
-│   │   ├── contact.js                 # Form handler, Turnstile, validation
+│   │   ├── contact.js                 # Take Action form handler (rep emails)
+│   │   ├── contact-general.js         # Contact page form handler (info@movets.org)
 │   │   ├── subscribe.js               # Newsletter subscription handler
 │   │   ├── map.js                     # Leaflet map, district rendering
 │   │   └── zip-lookup.js              # ZIP geocoding + point-in-polygon
 │   └── data/
 │       └── mo-house-districts.geojson # 163 districts (boundaries + rep info)
 ├── worker/                            # Cloudflare Worker (API backend)
-│   ├── src/index.js                   # API handler (send-email, subscribe)
+│   ├── src/index.js                   # API handler (send-email, subscribe, contact)
 │   ├── wrangler.toml                  # Worker config + D1 binding
 │   ├── schema.sql                     # D1 SQLite schema
 │   └── package.json                   # Wrangler dependency
