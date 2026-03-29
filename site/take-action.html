@@ -268,6 +268,12 @@
         mapStatus.innerHTML = `<span style="color:#26385E;font-weight:600;">District ${result.district}${repText}</span>`;
         highlightDistrict(result.district);
         resetBtn.style.display = '';
+        // Populate contact form ZIP and rep fields
+        if (zipInput) zipInput.value = zip;
+        if (result.email) {
+          setRepFromLookup(result);
+          repInfo.innerHTML = `<span style="color:#26385E;font-weight:600;">District ${result.district} \u2014 Rep. ${result.rep_name}</span>`;
+        }
       } else {
         mapStatus.textContent = 'Could not find a district for that ZIP code. Try clicking your area on the map.';
         mapStatus.style.color = '#DC1E35';
