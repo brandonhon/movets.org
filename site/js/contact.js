@@ -3,7 +3,8 @@ const status = document.getElementById('formStatus');
 const submitBtn = document.getElementById('submitBtn');
 
 // TODO: Replace with your Cloudflare Worker URL after deployment
-const API_URL = 'https://movets-api.YOUR_ACCOUNT.workers.dev/send-email';
+// const API_URL = 'https://movets-api.YOUR_ACCOUNT.workers.dev/send-email';
+const API_URL = 'http://localhost:8787/send-email';
 
 const DEFAULT_MESSAGE = 'I support HB2089 \u2013 please help Missouri\'s disabled veterans by passing this bill. Fair property tax relief for those who served our country should be a priority.';
 
@@ -150,9 +151,10 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // Get Turnstile token
-  const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
-  if (!turnstileToken) {
+  // Get Turnstile token (skip check if widget not loaded, e.g. local dev)
+  const turnstileEl = document.querySelector('[name="cf-turnstile-response"]');
+  const turnstileToken = turnstileEl ? turnstileEl.value : '';
+  if (turnstileEl && !turnstileToken) {
     status.textContent = 'Please complete the CAPTCHA verification.';
     status.style.color = '#DC1E35';
     return;

@@ -107,18 +107,22 @@ async function handleSendEmail(request, env, origin) {
   if (!isValidZip(zip)) {
     return json({ error: 'Invalid ZIP code.' }, 400, origin);
   }
-  if (!repEmail || !isRepEmail(repEmail)) {
+  const devMode = env.DEV_MODE === 'true';
+
+  if (!repEmail || (!devMode && !isRepEmail(repEmail)) || (devMode && !isValidEmail(repEmail))) {
     return json({ error: 'Invalid representative email. Must be a @house.mo.gov address.' }, 400, origin);
   }
 
-  // Turnstile verification
-  if (!turnstileToken) {
-    return json({ error: 'Please complete the CAPTCHA verification.' }, 400, origin);
-  }
+  // Turnstile verification (skipped in dev mode)
+  if (!devMode) {
+    if (!turnstileToken) {
+      return json({ error: 'Please complete the CAPTCHA verification.' }, 400, origin);
+    }
 
-  const turnstileOk = await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip);
-  if (!turnstileOk) {
-    return json({ error: 'CAPTCHA verification failed. Please try again.' }, 400, origin);
+    const turnstileOk = await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip);
+    if (!turnstileOk) {
+      return json({ error: 'CAPTCHA verification failed. Please try again.' }, 400, origin);
+    }
   }
 
   // Check: has this email already sent?
@@ -164,15 +168,23 @@ async function handleSendEmail(request, env, origin) {
     'Sent via MoVets.org \u2014 Non-partisan veteran advocacy for HB2089',
   ].join('\n');
 
-  // Send via Brevo
-  await sendViaBrevo(env.BREVO_API_KEY, {
-    from: env.FROM_EMAIL || 'noreply@movets.org',
-    fromName: env.FROM_NAME || 'MoVets.org',
-    to: repEmail,
-    replyTo: email,
-    subject,
-    textContent: emailBody,
-  });
+  // Send via Brevo (or log in dev mode)
+  if (devMode) {
+    console.log('[DEV] Would send email:');
+    console.log(`  To: ${repEmail}`);
+    console.log(`  Reply-To: ${email}`);
+    console.log(`  Subject: ${subject}`);
+    console.log(`  Body:\n${emailBody}`);
+  } else {
+    await sendViaBrevo(env.BREVO_API_KEY, {
+      from: env.FROM_EMAIL || 'noreply@movets.org',
+      fromName: env.FROM_NAME || 'MoVets.org',
+      to: repEmail,
+      replyTo: email,
+      subject,
+      textContent: emailBody,
+    });
+  }
 
   // Log to D1
   await env.DB.prepare(

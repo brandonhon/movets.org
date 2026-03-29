@@ -102,6 +102,21 @@ Create a `.dev.vars` file in the `worker/` directory (gitignored by Wrangler):
 
 ```bash
 cat > worker/.dev.vars << 'EOF'
+ALLOWED_ORIGIN=http://localhost:8080
+DEV_MODE=true
+EOF
+```
+
+`DEV_MODE=true` enables these behaviors:
+- **Skips Turnstile** — no CAPTCHA needed on the form
+- **Skips Brevo** — emails are logged to the terminal instead of sent
+- **Relaxes repEmail** — accepts any valid email, not just `@house.mo.gov`
+
+For production-like testing (real Turnstile + real Brevo sends), remove `DEV_MODE` and add:
+
+```bash
+cat > worker/.dev.vars << 'EOF'
+ALLOWED_ORIGIN=http://localhost:8080
 BREVO_API_KEY=your-brevo-api-key
 TURNSTILE_SECRET_KEY=your-turnstile-secret-key
 EOF
