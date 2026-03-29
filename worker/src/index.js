@@ -247,6 +247,7 @@ function getWelcomeEmailHtml() {
         <li>News about veteran property tax relief in Missouri</li>
       </ul>
       <p>In the meantime, the best thing you can do right now is <strong>contact your state representative</strong> and let them know you support HB2089.</p>
+      <p>And please <strong>share MoVets.org</strong> with fellow veterans, family, friends, and anyone who supports Missouri\u2019s disabled veterans. Every voice matters \u2014 the more people who speak up, the harder it is for legislators to ignore.</p>
       <hr class="divider">
       <p style="text-align:center;">
         <a href="https://movets.org/take-action.html" class="cta">Take Action Now</a>
@@ -274,7 +275,10 @@ Here\u2019s what you can expect:
 
 In the meantime, the best thing you can do right now is contact your state representative and let them know you support HB2089.
 
+Please share MoVets.org with fellow veterans, family, friends, and anyone who supports Missouri's disabled veterans. Every voice matters -- the more people who speak up, the harder it is for legislators to ignore.
+
 Take Action: https://movets.org/take-action.html
+Share: https://movets.org
 
 ---
 You received this because you subscribed to updates on MoVets.org.
