@@ -168,22 +168,27 @@ async function handleSendEmail(request, env, origin) {
     'Sent via MoVets.org \u2014 Non-partisan veteran advocacy for HB2089',
   ].join('\n');
 
-  // Send via Brevo (or log in dev mode)
-  if (devMode) {
-    console.log('[DEV] Would send email:');
-    console.log(`  To: ${repEmail}`);
-    console.log(`  Reply-To: ${email}`);
-    console.log(`  Subject: ${subject}`);
-    console.log(`  Body:\n${emailBody}`);
-  } else {
+  // Send via Brevo
+  const actualRecipient = (devMode && env.DEV_TEST_EMAIL) ? env.DEV_TEST_EMAIL : repEmail;
+
+  console.log(`[${devMode ? 'DEV' : 'PROD'}] Sending email:`);
+  console.log(`  To: ${actualRecipient}${actualRecipient !== repEmail ? ` (original: ${repEmail})` : ''}`);
+  console.log(`  Reply-To: ${email}`);
+  console.log(`  Subject: ${subject}`);
+
+  if (env.BREVO_API_KEY) {
     await sendViaBrevo(env.BREVO_API_KEY, {
       from: env.FROM_EMAIL || 'noreply@movets.org',
       fromName: env.FROM_NAME || 'MoVets.org',
-      to: repEmail,
+      to: actualRecipient,
       replyTo: email,
       subject,
       textContent: emailBody,
     });
+    console.log('  Status: Sent via Brevo');
+  } else {
+    console.log('  Status: Skipped (no BREVO_API_KEY)');
+    console.log(`  Body:\n${emailBody}`);
   }
 
   // Log to D1
