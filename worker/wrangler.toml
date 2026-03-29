@@ -14,4 +14,4 @@ ALLOWED_ORIGIN = "https://movets.org"
 [[d1_databases]]
 binding = "DB"
 database_name = "movets-email-log"
-database_id = "your-d1-database-id"
+database_id = "7206c499-27a5-4b6e-983f-3a59a16af45f"
