@@ -67,6 +67,40 @@ resource "cloudflare_workers_script" "api" {
 resource "cloudflare_turnstile_widget" "contact_form" {
   account_id = var.cloudflare_account_id
   name       = "movets-contact-form"
-  domains    = [var.domain]
+  domains    = [var.domain, "localhost"]
   mode       = "managed"
+}
+
+# -----------------------------------------------------------------------------
+# Cloudflare Pages (static site hosting)
+# -----------------------------------------------------------------------------
+resource "cloudflare_pages_project" "site" {
+  account_id        = var.cloudflare_account_id
+  name              = "movets-org"
+  production_branch = "main"
+
+  build_config {
+    build_command   = "npm run build"
+    destination_dir = "site"
+    root_dir        = ""
+  }
+
+  source {
+    type = "github"
+    config {
+      owner                         = var.github_owner
+      repo_name                     = var.github_repo
+      production_branch             = "main"
+      deployments_enabled           = true
+      pr_comments_enabled           = true
+      production_deployment_enabled = true
+    }
+  }
+}
+
+# Custom domain for Pages
+resource "cloudflare_pages_domain" "site" {
+  account_id   = var.cloudflare_account_id
+  project_name = cloudflare_pages_project.site.name
+  domain       = var.domain
 }

@@ -36,7 +36,8 @@ Designed after the [Politician X Webflow template](https://politiciantemplate.we
 | Database | Cloudflare D1 (SQLite) |
 | Email | Brevo API (free: 300/day) |
 | CAPTCHA | Cloudflare Turnstile (free) |
-| Hosting | Docker (nginx:alpine) on port 8080 |
+| Hosting | Cloudflare Pages (production), Docker (local dev) |
+| Analytics | Cloudflare Web Analytics (free, no cookies) |
 | IaC | Terraform (Cloudflare provider) |
 
 ## Quick Start
@@ -64,6 +65,8 @@ Open http://localhost:8080
 │   ├── about.html                     # About MoVets.org
 │   ├── contact.html                   # Contact page
 │   ├── data-sources.html              # Data sources
+│   ├── robots.txt                     # Search engine crawl rules
+│   ├── sitemap.xml                    # Sitemap for search engines
 │   ├── favicon.svg                    # Site icon
 │   ├── css/
 │   │   ├── style.css                  # Custom theme (Politician X)
@@ -119,11 +122,13 @@ Open http://localhost:8080
 ### Step 1: Cloudflare Setup
 
 1. Create a free Cloudflare account
-2. Get your **Account ID** from the dashboard
-3. Create an **API Token** with Workers, D1, and Turnstile permissions
-4. Go to **Turnstile** in the dashboard and create a widget — note the **Site Key** and **Secret Key**
-5. Verify your sender domain in Brevo (SMTP & API > Senders & IPs)
-6. Get your **Brevo API Key** from SMTP & API > API Keys
+2. Get your **Account ID** from Workers & Pages in the dashboard
+3. Create an **API Token** with Workers Scripts, D1, Turnstile, and Pages permissions
+4. Go to **Turnstile** and create a widget — note the **Site Key** and **Secret Key**
+5. Go to **Web Analytics** and create a site — note the **Analytics Token**
+6. Connect your GitHub repo to Cloudflare Pages (Terraform handles this)
+7. Verify your sender domain in Brevo (Settings > SMTP & API > Senders & IPs)
+8. Get your **Brevo API Key** from Brevo (Settings > SMTP & API > API Keys)
 
 ### Step 2: Deploy Infrastructure (Terraform)
 
@@ -142,7 +147,8 @@ terraform apply
 Note the outputs:
 - `d1_database_id` — update in `worker/wrangler.toml`
 - `turnstile_site_key` — update in `site/take-action.html` and `site/contact.html`
-- `worker_url` — update `API_URL` in `site/js/contact.js`
+- `worker_url` — update `API_URL` in `site/js/contact.js` and `site/js/subscribe.js`
+- `pages_url` — your Cloudflare Pages URL (auto-deploys from GitHub)
 
 ### Step 3: Deploy the Worker
 
@@ -168,31 +174,30 @@ Replace these placeholders in the site files:
 | Placeholder | File(s) | Replace With |
 |-------------|---------|-------------|
 | `YOUR_TURNSTILE_SITE_KEY` | `site/take-action.html`, `site/contact.html` | Turnstile site key |
+| `YOUR_CF_ANALYTICS_TOKEN` | All 6 HTML files | Cloudflare Web Analytics token |
 | `https://movets-api.YOUR_ACCOUNT.workers.dev/send-email` | `site/js/contact.js` | Worker URL |
 | `https://movets-api.YOUR_ACCOUNT.workers.dev/subscribe` | `site/js/subscribe.js` | Worker URL |
 
-### Step 5: Build & Deploy the Site
+### Step 5: DNS Setup
 
-```bash
-# Build CSS
-npm run build
+Add a CNAME record in your DNS provider (Namecheap, etc.):
 
-# Option A: Docker
-make docker-run
-# Site available at http://localhost:8080
+| Type | Host | Value |
+|------|------|-------|
+| CNAME | `@` or `movets.org` | `movets-org.pages.dev` |
+| CNAME | `www` | `movets-org.pages.dev` |
 
-# Option B: Any static host
-# Upload the site/ directory to GitHub Pages, Netlify, Vercel, etc.
-```
+Cloudflare Pages handles SSL automatically.
 
-### Firewall Ports
+### Hosting
 
-If hosting behind a firewall, ensure these ports are open:
+The site is hosted on **Cloudflare Pages** (free tier):
+- Auto-deploys on every push to `main`
+- Global CDN with edge caching
+- Free SSL
+- Unlimited bandwidth
 
-| Port | Protocol | Direction | Purpose |
-|------|----------|-----------|---------|
-| **8080** | TCP | Inbound | nginx serves the site |
-| **443** | TCP | Outbound | Worker → Brevo API, Turnstile verification |
+Docker is available for local development only (`make docker-run`).
 
 ## Makefile Commands
 
@@ -255,6 +260,19 @@ node scripts/send-newsletter.js --subject "HB2089 Update" --content your-content
 ```
 
 The script reads subscribers from D1, merges your content into `scripts/newsletter-template.html`, and sends individually via Brevo.
+
+## SEO
+
+| Feature | Status |
+|---------|--------|
+| Meta descriptions | All 6 pages |
+| Open Graph tags | All 6 pages |
+| Twitter Card tags | All 6 pages |
+| Canonical URLs | All 6 pages |
+| JSON-LD schema | `index.html` (Organization) |
+| `robots.txt` | Allow all, sitemap pointer |
+| `sitemap.xml` | All 6 pages with priorities |
+| Cloudflare Web Analytics | All 6 pages (no cookies, GDPR-compliant) |
 
 ## Anti-Spam Measures
 

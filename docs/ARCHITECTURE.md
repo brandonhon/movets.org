@@ -1,6 +1,6 @@
 # MoVets.org Architecture Overview
 
-MoVets.org is a static advocacy website for Missouri HB2089 (veteran property tax relief). It pairs a multi-page static frontend served from Docker (nginx) with a Cloudflare Workers serverless backend for constituent-to-representative email delivery via Brevo.
+MoVets.org is a static advocacy website for Missouri HB2089 (veteran property tax relief). It pairs a multi-page static frontend hosted on Cloudflare Pages with a Cloudflare Workers serverless backend for constituent-to-representative email delivery via Brevo.
 
 ## System Architecture
 
@@ -17,7 +17,8 @@ MoVets.org is a static advocacy website for Missouri HB2089 (veteran property ta
 | **Database** | Cloudflare D1 (SQLite) | Email logging, rate limiting, duplicate prevention |
 | **Email** | Brevo API | Delivers constituent messages to state reps (free: 300/day) |
 | **CAPTCHA** | Cloudflare Turnstile | Bot prevention (free, privacy-friendly) |
-| **Hosting** | Docker (nginx:alpine) | Static site container on port 8080 |
+| **Hosting** | Cloudflare Pages | Static site with global CDN (auto-deploys from GitHub) |
+| **Analytics** | Cloudflare Web Analytics | Privacy-friendly, no cookies, GDPR-compliant |
 | **Infrastructure** | Terraform (Cloudflare provider) | Infrastructure as Code |
 
 ### Design Principles
@@ -27,6 +28,8 @@ MoVets.org is a static advocacy website for Missouri HB2089 (veteran property ta
 - **No paid services** — Cloudflare free tier + Brevo free tier
 - **Serverless backend** — zero cost at rest, scales automatically
 - **SQLite-backed limits** — persistent rate limiting across Worker restarts
+- **SEO complete** — OG tags, Twitter cards, canonical URLs, JSON-LD, sitemap, robots.txt
+- **Privacy-first analytics** — Cloudflare Web Analytics, no cookies, no consent banner needed
 
 ---
 

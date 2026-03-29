@@ -31,3 +31,14 @@ variable "turnstile_secret_key" {
   type        = string
   sensitive   = true
 }
+
+variable "github_owner" {
+  description = "GitHub repository owner (user or organization)"
+  type        = string
+}
+
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+  default     = "movets.org"
+}

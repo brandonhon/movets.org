@@ -12,3 +12,13 @@ output "turnstile_site_key" {
   description = "Turnstile site key (add to HTML pages)"
   value       = cloudflare_turnstile_widget.contact_form.id
 }
+
+output "pages_url" {
+  description = "Cloudflare Pages URL"
+  value       = "https://${cloudflare_pages_project.site.subdomain}"
+}
+
+output "pages_domain" {
+  description = "Custom domain for Pages (add CNAME in DNS)"
+  value       = var.domain
+}
