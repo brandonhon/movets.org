@@ -61,7 +61,7 @@
     box.style.cssText = 'background:#fff;border-radius:16px;padding:40px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);';
 
     var icon = document.createElement('div');
-    icon.style.cssText = 'margin-bottom:16px;';
+    icon.style.cssText = 'margin-bottom:16px;text-align:center;';
     if (success) {
       var img = document.createElement('img');
       img.src = 'icons/like.png';
