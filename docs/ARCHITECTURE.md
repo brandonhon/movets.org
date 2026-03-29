@@ -245,13 +245,13 @@ movets.org/
 ├── docker-compose.yml                 # Docker Compose (port 8080)
 ├── nginx.conf                         # nginx config (gzip, caching, headers)
 ├── Makefile                           # Dev, build, deploy commands
-├── tailwind.config.js                 # Design tokens (Politician X palette)
+├── tailwind.config.js                 # Design tokens (color palette)
 └── package.json                       # npm scripts + Tailwind dependency
 ```
 
 ---
 
-## Design System (Politician X)
+## Design System
 
 ### Color Palette
 
