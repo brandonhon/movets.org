@@ -3,73 +3,136 @@
 /**
  * MoVets.org D1 Database Visualizer
  *
- * Queries the Cloudflare D1 database and prints a dashboard summary
- * of email activity and newsletter subscribers.
+ * Queries the Cloudflare D1 database (remote or local) and prints a
+ * dashboard summary of email activity and newsletter subscribers.
  *
  * Usage:
- *   node scripts/visualize.js                # Full dashboard
+ *   node scripts/visualize.js                # Remote D1 (full dashboard)
+ *   node scripts/visualize.js --local        # Local dev D1 (full dashboard)
  *   node scripts/visualize.js --emails       # Email stats only
  *   node scripts/visualize.js --subscribers  # Subscriber stats only
  *   node scripts/visualize.js --export-csv   # Export both tables to CSV
  *
- * Environment variables:
- *   CLOUDFLARE_ACCOUNT_ID  - Cloudflare account ID (required)
- *   CLOUDFLARE_API_TOKEN   - Cloudflare API token with D1 read access (required)
- *   D1_DATABASE_ID         - Cloudflare D1 database ID (required)
+ * Local mode (--local):
+ *   Reads from worker/.wrangler/state/v3/d1/ SQLite files directly.
+ *   No environment variables needed.
+ *
+ * Remote mode (default):
+ *   Environment variables:
+ *     CLOUDFLARE_ACCOUNT_ID  - Cloudflare account ID (required)
+ *     CLOUDFLARE_API_TOKEN   - Cloudflare API token with D1 read access (required)
+ *     D1_DATABASE_ID         - Cloudflare D1 database ID (required)
  */
 
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
 
-const CF_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
-const CF_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
-const D1_DATABASE_ID = process.env.D1_DATABASE_ID;
-
-if (!CF_ACCOUNT_ID || !CF_API_TOKEN || !D1_DATABASE_ID) {
-  console.error('Missing required environment variables:');
-  console.error('  CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, D1_DATABASE_ID');
-  process.exit(1);
-}
-
 const args = process.argv.slice(2);
+const isLocal = args.includes('--local');
 const showEmails = args.includes('--emails') || (!args.includes('--subscribers') && !args.includes('--export-csv'));
 const showSubscribers = args.includes('--subscribers') || (!args.includes('--emails') && !args.includes('--export-csv'));
 const exportCsv = args.includes('--export-csv');
 
-// --- D1 query helper ---
+// --- Query backends ---
 
-function queryD1(sql) {
-  const url = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/d1/database/${D1_DATABASE_ID}/query`;
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify({ sql });
-    const req = https.request(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${CF_API_TOKEN}`,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(body),
-      },
-    }, (res) => {
-      let data = '';
-      res.on('data', (chunk) => { data += chunk; });
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(data);
-          if (!parsed.success) {
-            reject(new Error(`D1 error: ${JSON.stringify(parsed.errors)}`));
-          } else {
-            resolve(parsed.result[0].results);
+let query;
+
+if (isLocal) {
+  let sqlite3;
+  try {
+    sqlite3 = require('better-sqlite3');
+  } catch {
+    // Fall back to spawning the sqlite3 CLI
+    sqlite3 = null;
+  }
+
+  // Find the local D1 SQLite file
+  const d1Dir = path.join(__dirname, '..', 'worker', '.wrangler', 'state', 'v3', 'd1');
+
+  function findSqliteFile(dir) {
+    if (!fs.existsSync(dir)) return null;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        const found = findSqliteFile(full);
+        if (found) return found;
+      } else if (entry.name.endsWith('.sqlite')) {
+        return full;
+      }
+    }
+    return null;
+  }
+
+  const dbPath = findSqliteFile(d1Dir);
+  if (!dbPath) {
+    console.error('Local D1 database not found at worker/.wrangler/state/v3/d1/');
+    console.error('Run "cd worker && npm run db:init:local" first.');
+    process.exit(1);
+  }
+
+  console.log(`Using local database: ${path.relative(process.cwd(), dbPath)}\n`);
+
+  if (sqlite3) {
+    const db = sqlite3(dbPath, { readonly: true });
+    query = async (sql) => db.prepare(sql).all();
+  } else {
+    // Use sqlite3 CLI as fallback
+    const { execSync } = require('child_process');
+    query = async (sql) => {
+      try {
+        const out = execSync(`sqlite3 -json "${dbPath}" "${sql.replace(/"/g, '\\"')}"`, { encoding: 'utf-8' });
+        return out.trim() ? JSON.parse(out) : [];
+      } catch (err) {
+        if (err.stdout && err.stdout.trim()) return JSON.parse(err.stdout);
+        return [];
+      }
+    };
+  }
+} else {
+  const CF_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const CF_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
+  const D1_DATABASE_ID = process.env.D1_DATABASE_ID;
+
+  if (!CF_ACCOUNT_ID || !CF_API_TOKEN || !D1_DATABASE_ID) {
+    console.error('Missing required environment variables:');
+    console.error('  CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, D1_DATABASE_ID');
+    console.error('\nFor local dev database, use: node scripts/visualize.js --local');
+    process.exit(1);
+  }
+
+  query = (sql) => {
+    const url = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/d1/database/${D1_DATABASE_ID}/query`;
+    return new Promise((resolve, reject) => {
+      const body = JSON.stringify({ sql });
+      const req = https.request(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${CF_API_TOKEN}`,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body),
+        },
+      }, (res) => {
+        let data = '';
+        res.on('data', (chunk) => { data += chunk; });
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            if (!parsed.success) {
+              reject(new Error(`D1 error: ${JSON.stringify(parsed.errors)}`));
+            } else {
+              resolve(parsed.result[0].results);
+            }
+          } catch (e) {
+            reject(new Error(`Parse error: ${data.slice(0, 200)}`));
           }
-        } catch (e) {
-          reject(new Error(`Parse error: ${data.slice(0, 200)}`));
-        }
+        });
       });
+      req.on('error', reject);
+      req.write(body);
+      req.end();
     });
-    req.on('error', reject);
-    req.write(body);
-    req.end();
-  });
+  };
 }
 
 // --- Display helpers ---
@@ -99,16 +162,16 @@ async function emailDashboard() {
     dateRange,
     byIpRows,
   ] = await Promise.all([
-    queryD1('SELECT COUNT(*) as cnt FROM emails'),
-    queryD1('SELECT message_type, COUNT(*) as cnt FROM emails GROUP BY message_type'),
-    queryD1('SELECT district, COUNT(*) as cnt FROM emails WHERE district != "" GROUP BY district ORDER BY cnt DESC LIMIT 15'),
-    queryD1('SELECT rep_name, rep_email, COUNT(*) as cnt FROM emails WHERE rep_name != "" GROUP BY rep_email ORDER BY cnt DESC LIMIT 15'),
-    queryD1('SELECT sender_zip, COUNT(*) as cnt FROM emails GROUP BY sender_zip ORDER BY cnt DESC LIMIT 15'),
-    queryD1('SELECT DATE(created_at) as d, COUNT(*) as cnt FROM emails GROUP BY d ORDER BY d'),
-    queryD1('SELECT COUNT(DISTINCT sender_email) as cnt FROM emails'),
-    queryD1('SELECT COUNT(DISTINCT rep_email) as cnt FROM emails'),
-    queryD1('SELECT MIN(created_at) as first_at, MAX(created_at) as last_at FROM emails'),
-    queryD1('SELECT ip_address, COUNT(*) as cnt FROM emails GROUP BY ip_address ORDER BY cnt DESC LIMIT 10'),
+    query('SELECT COUNT(*) as cnt FROM emails'),
+    query('SELECT message_type, COUNT(*) as cnt FROM emails GROUP BY message_type'),
+    query('SELECT district, COUNT(*) as cnt FROM emails WHERE district != "" GROUP BY district ORDER BY cnt DESC LIMIT 15'),
+    query('SELECT rep_name, rep_email, COUNT(*) as cnt FROM emails WHERE rep_name != "" GROUP BY rep_email ORDER BY cnt DESC LIMIT 15'),
+    query('SELECT sender_zip, COUNT(*) as cnt FROM emails GROUP BY sender_zip ORDER BY cnt DESC LIMIT 15'),
+    query('SELECT DATE(created_at) as d, COUNT(*) as cnt FROM emails GROUP BY d ORDER BY d'),
+    query('SELECT COUNT(DISTINCT sender_email) as cnt FROM emails'),
+    query('SELECT COUNT(DISTINCT rep_email) as cnt FROM emails'),
+    query('SELECT MIN(created_at) as first_at, MAX(created_at) as last_at FROM emails'),
+    query('SELECT ip_address, COUNT(*) as cnt FROM emails GROUP BY ip_address ORDER BY cnt DESC LIMIT 10'),
   ]);
 
   const total = totalRows[0].cnt;
@@ -204,10 +267,10 @@ async function subscriberDashboard() {
     byDateRows,
     recentRows,
   ] = await Promise.all([
-    queryD1('SELECT COUNT(*) as cnt FROM subscribers'),
-    queryD1('SELECT COUNT(*) as cnt FROM subscribers WHERE unsubscribed_at IS NULL'),
-    queryD1('SELECT DATE(subscribed_at) as d, COUNT(*) as cnt FROM subscribers GROUP BY d ORDER BY d'),
-    queryD1('SELECT email, subscribed_at FROM subscribers WHERE unsubscribed_at IS NULL ORDER BY subscribed_at DESC LIMIT 10'),
+    query('SELECT COUNT(*) as cnt FROM subscribers'),
+    query('SELECT COUNT(*) as cnt FROM subscribers WHERE unsubscribed_at IS NULL'),
+    query('SELECT DATE(subscribed_at) as d, COUNT(*) as cnt FROM subscribers GROUP BY d ORDER BY d'),
+    query('SELECT email, subscribed_at FROM subscribers WHERE unsubscribed_at IS NULL ORDER BY subscribed_at DESC LIMIT 10'),
   ]);
 
   const total = totalRows[0].cnt;
@@ -257,7 +320,7 @@ async function exportToCsv() {
   fs.mkdirSync(outDir, { recursive: true });
 
   // Emails
-  const emails = await queryD1('SELECT * FROM emails ORDER BY created_at');
+  const emails = await query('SELECT * FROM emails ORDER BY created_at');
   if (emails.length > 0) {
     const cols = Object.keys(emails[0]);
     const rows = emails.map((r) => cols.map((c) => r[c]));
@@ -270,7 +333,7 @@ async function exportToCsv() {
   }
 
   // Subscribers
-  const subs = await queryD1('SELECT * FROM subscribers ORDER BY subscribed_at');
+  const subs = await query('SELECT * FROM subscribers ORDER BY subscribed_at');
   if (subs.length > 0) {
     const cols = Object.keys(subs[0]);
     const rows = subs.map((r) => cols.map((c) => r[c]));
