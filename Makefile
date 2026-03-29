@@ -38,8 +38,20 @@ check-links: ## Check all links in the site
 dashboard: ## Show email + subscriber stats from remote D1
 	node scripts/visualize.js
 
+dashboard-emails: ## Show email stats only from remote D1
+	node scripts/visualize.js --emails
+
+dashboard-subs: ## Show subscriber stats only from remote D1
+	node scripts/visualize.js --subscribers
+
 dashboard-local: ## Show email + subscriber stats from local D1
 	node scripts/visualize.js --local
+
+dashboard-local-emails: ## Show email stats only from local D1
+	node scripts/visualize.js --local --emails
+
+dashboard-local-subs: ## Show subscriber stats only from local D1
+	node scripts/visualize.js --local --subscribers
 
 export-csv: ## Export remote D1 data to CSV
 	node scripts/visualize.js --export-csv

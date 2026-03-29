@@ -1,6 +1,6 @@
 output "worker_url" {
   description = "Cloudflare Worker API URL"
-  value       = "https://movets-api.${var.cloudflare_account_id}.workers.dev"
+  value       = "https://movets-api.${var.workers_subdomain}.workers.dev"
 }
 
 output "d1_database_id" {
@@ -9,7 +9,7 @@ output "d1_database_id" {
 }
 
 output "turnstile_site_key" {
-  description = "Turnstile site key (add to HTML pages)"
+  description = "Turnstile site key (auto-configured in Pages build)"
   value       = cloudflare_turnstile_widget.contact_form.id
 }
 
@@ -18,7 +18,15 @@ output "pages_url" {
   value       = "https://${cloudflare_pages_project.site.subdomain}"
 }
 
-output "pages_domain" {
+output "pages_custom_domain" {
   description = "Custom domain for Pages (add CNAME in DNS)"
   value       = var.domain
+}
+
+output "dns_records" {
+  description = "DNS records to add at your registrar"
+  value       = <<-EOT
+    CNAME  @    → movets-org.pages.dev
+    CNAME  www  → movets-org.pages.dev
+  EOT
 }

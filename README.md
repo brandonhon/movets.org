@@ -34,36 +34,38 @@ Pushes to `main` auto-deploy the site via Cloudflare Pages and trigger GitHub Ac
 - Cloudflare: create API token, Turnstile widget, Web Analytics site
 - Brevo: verify sender domain, get API key
 
-### 2. GitHub Secrets
+### 2. GitHub Secrets & Variables
 
-Go to repo **Settings > Secrets and variables > Actions**.
+Go to repo **Settings > Secrets and variables > Actions** and add all of the following.
 
-**Secrets** (sensitive):
+**Secrets** (sensitive — used by GitHub Actions for Terraform and Worker deploys):
 
-| Secret | Value |
-|--------|-------|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API token |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
-| `BREVO_API_KEY` | Brevo transactional email API key |
-| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key |
+| Secret | Where to find |
+|--------|--------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare > Profile > API Tokens > Create Token |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare > Workers & Pages > right sidebar |
+| `BREVO_API_KEY` | Brevo > Settings > SMTP & API > API Keys |
+| `TURNSTILE_SECRET_KEY` | Cloudflare > Turnstile > your widget > Secret Key |
 
-**Variables** (non-sensitive):
+**Variables** (non-sensitive — used by GitHub Actions for Terraform):
 
-| Variable | Value |
-|----------|-------|
-| `TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key |
-| `CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics token |
-| `WORKER_URL` | e.g. `https://movets-api.xxx.workers.dev` |
+| Variable | Where to find |
+|----------|--------------|
+| `WORKERS_SUBDOMAIN` | Cloudflare > Workers & Pages > Overview > "Your subdomain" (e.g. `bh-cloudflare-8d4`) |
+| `CF_ANALYTICS_TOKEN` | Cloudflare > Web Analytics > your site > JS snippet token |
+
+`github_owner` and `github_repo` are derived automatically from the repository — no manual setup needed.
 
 ### 3. Cloudflare Pages Environment Variables
 
-Set the same 3 variables in **Cloudflare Pages > your project > Settings > Environment variables**:
+**Managed by Terraform** — no manual setup needed.
 
-- `TURNSTILE_SITE_KEY`
-- `CF_ANALYTICS_TOKEN`
-- `WORKER_URL`
+Terraform automatically sets these in the Pages build environment:
+- `TURNSTILE_SITE_KEY` — from the Terraform-created Turnstile widget
+- `CF_ANALYTICS_TOKEN` — from the `cf_analytics_token` variable
+- `WORKER_URL` — constructed from `workers_subdomain`
 
-These are injected into HTML/JS at build time by `scripts/inject-env.js`.
+These are injected into the HTML/JS at build time by `scripts/inject-env.js`.
 
 ### 4. DNS Setup
 
@@ -114,10 +116,10 @@ git push -u origin my-feature
 │   ├── sitemap.xml                    # Sitemap for search engines
 │   ├── css/                           # Tailwind + custom CSS
 │   ├── icons/                         # Flaticon.com PNG icons
-│   ├── js/                            # contact.js, subscribe.js, map.js, zip-lookup.js
+│   ├── js/                            # contact.js, contact-general.js, subscribe.js, map.js, zip-lookup.js
 │   └── data/                          # GeoJSON district boundaries
 ├── worker/                            # Cloudflare Worker API
-│   ├── src/index.js                   # POST /send-email, POST /subscribe
+│   ├── src/index.js                   # POST /send-email, /subscribe, /contact
 │   ├── schema.sql                     # D1 database schema
 │   └── wrangler.toml                  # Worker config
 ├── terraform/                         # Cloudflare infrastructure (Worker, D1, Turnstile, Pages)
@@ -131,18 +133,27 @@ git push -u origin my-feature
 ## Makefile
 
 ```bash
-make help              # Show all commands
-make setup             # Install deps + init local D1
-make dev               # Tailwind watch + local server
-make worker            # Start local Worker
-make docker-run        # Build + run Docker container
-make dashboard         # Remote D1 stats
-make dashboard-local   # Local D1 stats
-make check-links       # Check all site links
-make newsletter-preview # Dry-run newsletter
-make newsletter-send   # Send newsletter to subscribers
-make db-reset          # Reset local D1 database
-make clean             # Remove build artifacts
+make help                # Show all commands
+make setup               # Install deps + init local D1
+make dev                 # Tailwind watch + local server
+make worker              # Start local Worker
+make build               # Build Tailwind CSS (production)
+make docker-run          # Build + run Docker container
+make check-links         # Check all site links
+make dashboard           # Remote D1 stats (emails + subscribers)
+make dashboard-emails    # Remote D1 email stats only
+make dashboard-subs      # Remote D1 subscriber stats only
+make dashboard-local     # Local D1 stats (emails + subscribers)
+make dashboard-local-emails  # Local D1 email stats only
+make dashboard-local-subs    # Local D1 subscriber stats only
+make export-csv          # Export remote D1 to CSV
+make export-csv-local    # Export local D1 to CSV
+make newsletter-preview  # Dry-run newsletter
+make newsletter-send     # Send newsletter to subscribers
+make deploy-worker       # Deploy Worker to production
+make deploy-infra        # Apply Terraform
+make db-reset            # Reset local D1 database
+make clean               # Remove build artifacts
 ```
 
 ## Anti-Spam
