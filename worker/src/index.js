@@ -337,6 +337,81 @@ async function handleSubscribe(request, env, origin) {
   return json({ success: true, message: 'Thank you for subscribing!' }, 200, origin);
 }
 
+const CONTACT_EMAIL = 'info@movets.org';
+
+async function handleContact(request, env, origin) {
+  const rawBody = await request.text();
+  if (rawBody.length > MAX_BODY_SIZE) {
+    return json({ error: 'Request too large.' }, 413, origin);
+  }
+
+  const body = JSON.parse(rawBody);
+  const { name, email, message, website, turnstileToken } = body;
+
+  // Honeypot
+  if (website) {
+    return json({ success: true }, 200, origin);
+  }
+
+  if (!name || !email || !message) {
+    return json({ error: 'All fields are required.' }, 400, origin);
+  }
+  if (!isValidEmail(email)) {
+    return json({ error: 'Invalid email address.' }, 400, origin);
+  }
+
+  const devMode = env.DEV_MODE === 'true';
+
+  // Turnstile verification (skipped in dev mode)
+  if (!devMode) {
+    if (!turnstileToken) {
+      return json({ error: 'Please complete the CAPTCHA verification.' }, 400, origin);
+    }
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const turnstileOk = await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip);
+    if (!turnstileOk) {
+      return json({ error: 'CAPTCHA verification failed. Please try again.' }, 400, origin);
+    }
+  }
+
+  const cleanName = sanitize(name);
+  const cleanMessage = sanitize(message);
+
+  const subject = `MoVets.org Contact: Message from ${cleanName}`;
+  const emailBody = [
+    `New message from MoVets.org contact form:`,
+    '',
+    `Name: ${cleanName}`,
+    `Email: ${email}`,
+    '',
+    cleanMessage,
+  ].join('\n');
+
+  const recipient = (devMode && env.DEV_CONTACT_EMAIL) ? env.DEV_CONTACT_EMAIL : CONTACT_EMAIL;
+
+  console.log(`[${devMode ? 'DEV' : 'PROD'}] Contact form:`);
+  console.log(`  To: ${recipient}`);
+  console.log(`  From: ${cleanName} <${email}>`);
+  console.log(`  Message: ${cleanMessage.slice(0, 100)}...`);
+
+  if (env.BREVO_API_KEY) {
+    await sendViaBrevo(env.BREVO_API_KEY, {
+      from: env.FROM_EMAIL || 'noreply@movets.org',
+      fromName: env.FROM_NAME || 'MoVets.org',
+      to: recipient,
+      replyTo: email,
+      subject,
+      textContent: emailBody,
+    });
+    console.log('  Status: Sent via Brevo');
+  } else {
+    console.log('  Status: Skipped (no BREVO_API_KEY)');
+    console.log(`  Body:\n${emailBody}`);
+  }
+
+  return json({ success: true, message: 'Message sent successfully.' }, 200, origin);
+}
+
 // --- Main entry ---
 
 export default {
@@ -365,6 +440,8 @@ export default {
           return await handleSendEmail(request, env, origin);
         case '/subscribe':
           return await handleSubscribe(request, env, origin);
+        case '/contact':
+          return await handleContact(request, env, origin);
         default:
           return json({ error: 'Not found.' }, 404, origin);
       }

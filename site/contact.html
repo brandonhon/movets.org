@@ -127,28 +127,8 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Missouri ZIP Code</label>
-              <input type="text" name="zip" id="zipInput" required pattern="[0-9]{5}" maxlength="5" class="form-input" placeholder="65101">
-              <p id="repInfo" style="font-size:14px;color:#717379;margin-top:8px;"></p>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">To Representative</label>
-              <input type="email" id="repEmail" class="form-input" readonly style="background:#F2F2F4;cursor:not-allowed;" placeholder="Enter your ZIP code above to find your representative">
-              <p id="repLabel" style="font-size:14px;color:#26385E;font-weight:600;margin-top:6px;"></p>
-            </div>
-
-            <div class="form-group">
               <label class="form-label">Message</label>
-              <textarea name="message" required rows="8" class="form-textarea" placeholder="Your message...">I support HB2089 – please help Missouri's disabled veterans by passing this bill. Fair property tax relief for those who served our country should be a priority.</textarea>
-            </div>
-
-            <div class="form-group" style="background:#FFEFF1;border-radius:12px;padding:20px;">
-              <label style="display:flex;gap:12px;align-items:start;cursor:pointer;font-size:15px;line-height:24px;color:#26385E;">
-                <input type="checkbox" id="includeRevisions" name="includeRevisions" style="margin-top:4px;width:18px;height:18px;accent-color:#FF344C;flex-shrink:0;">
-                <span><strong>Include proposed revisions in my message</strong><br>
-                <span style="font-size:13px;color:#717379;">Append the 7 recommended amendments (raise value cap to $350K, clarify disability eligibility, surviving spouse protections, vehicle exemption, and more). <a href="about-bill.html#revisions" style="color:#FF344C;">View details</a></span></span>
-              </label>
+              <textarea name="message" required rows="8" class="form-textarea" placeholder="How can we help? Questions about HB2089, the site, or getting involved..."></textarea>
             </div>
 
             <div class="form-group" style="display:flex;justify-content:center;">
@@ -214,8 +194,7 @@
     </div>
   </footer>
 
-  <script src="js/zip-lookup.js"></script>
-  <script src="js/contact.js"></script>
+  <script src="js/contact-general.js"></script>
   <script>
     // Nav
     window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10); });
@@ -223,34 +202,6 @@
     const mobileNav = document.getElementById('mobileNav');
     navToggle.addEventListener('click', () => mobileNav.classList.toggle('open'));
     mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileNav.classList.remove('open')));
-
-    // ZIP lookup — populates rep email field
-    const zipInput = document.getElementById('zipInput');
-    const repInfo = document.getElementById('repInfo');
-    let lookupTimeout;
-    zipInput.addEventListener('input', () => {
-      clearTimeout(lookupTimeout);
-      const zip = zipInput.value.trim();
-      if (zip.length === 5 && /^\d{5}$/.test(zip)) {
-        repInfo.textContent = 'Looking up your representative...';
-        lookupTimeout = setTimeout(async () => {
-          const result = await lookupDistrictByZip(zip);
-          if (result && result.email) {
-            repInfo.innerHTML = `<span style="color:#26385E;font-weight:600;">District ${result.district} \u2014 Rep. ${result.rep_name}</span>`;
-            setRepFromLookup(result);
-          } else if (result) {
-            repInfo.textContent = 'District ' + result.district + ' \u2014 Seat currently vacant.';
-            setRepFromLookup(null);
-          } else {
-            repInfo.textContent = 'Could not determine district. Visit Take Action to browse the map.';
-            setRepFromLookup(null);
-          }
-        }, 500);
-      } else {
-        repInfo.textContent = '';
-        setRepFromLookup(null);
-      }
-    });
   </script>
   <script src="js/subscribe.js"></script>
   <!-- Cloudflare Web Analytics -->
