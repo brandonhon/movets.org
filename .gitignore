@@ -1,9 +1,11 @@
 node_modules/
-site/css/styles.css
 .DS_Store
 .claude/
 .venv/
 *.pyc
+
+# Build output
+site/css/styles.css
 
 # Terraform
 terraform/.terraform/
@@ -11,8 +13,19 @@ terraform/*.tfstate*
 terraform/.terraform.lock.hcl
 terraform/terraform.tfvars
 
+# Worker local dev
+worker/.wrangler/
+worker/.dev.vars
+worker/node_modules/
+
 # Docker
 .docker/
 
 # Data exports
 data/*.csv
+
+# OS files
+Thumbs.db
+*.swp
+*.swo
+*~
