@@ -21,7 +21,8 @@ Designed after the [Politician X Webflow template](https://politiciantemplate.we
 - **ZIP-to-district lookup** — Geocodes ZIP via Nominatim + Census reverse geocoder
 - **Contact form** — Sends messages via Cloudflare Worker + Brevo API
 - **Cloudflare Turnstile** — Free, privacy-friendly CAPTCHA (no annoying puzzles)
-- **Rate limiting** — 1 message per email address, 3 messages per IP (enforced via D1 database)
+- **Anti-spam** — 1 message per email, 4 per IP, US-only geo-block, repEmail domain validation
+- **Newsletter** — Footer subscribe form + CLI send script via Brevo
 - **Responsive design** — Sticky nav, mobile hamburger menu, fluid layout
 - **Docker support** — Runs in nginx container on port 8080
 
@@ -69,6 +70,7 @@ Open http://localhost:8080
 │   │   └── styles.css                 # Tailwind output (generated)
 │   ├── js/
 │   │   ├── contact.js                 # Form handler + Turnstile
+│   │   ├── subscribe.js               # Newsletter subscription
 │   │   ├── map.js                     # Leaflet map + districts
 │   │   └── zip-lookup.js              # ZIP geocoding cascade
 │   └── data/
@@ -86,6 +88,9 @@ Open http://localhost:8080
 ├── scripts/
 │   ├── merge-reps.js                  # Merge rep data into GeoJSON
 │   ├── check-links.js                 # Link checker
+│   ├── send-newsletter.js             # Send newsletter to subscribers
+│   ├── newsletter-template.html       # Newsletter HTML template
+│   ├── newsletter-example.html        # Example newsletter content
 │   └── generate_architecture_diagrams.py
 ├── docs/
 │   ├── ARCHITECTURE.md                # Architecture overview
@@ -162,6 +167,7 @@ Replace these placeholders in the site files:
 |-------------|---------|-------------|
 | `YOUR_TURNSTILE_SITE_KEY` | `site/take-action.html`, `site/contact.html` | Turnstile site key |
 | `https://movets-api.YOUR_ACCOUNT.workers.dev/send-email` | `site/js/contact.js` | Worker URL |
+| `https://movets-api.YOUR_ACCOUNT.workers.dev/subscribe` | `site/js/subscribe.js` | Worker URL |
 
 ### Step 5: Build & Deploy the Site
 
@@ -195,10 +201,45 @@ make build         # Build Tailwind CSS (production)
 make serve         # Serve site locally (port 8080)
 make docker        # Build Docker image
 make docker-run    # Build + run Docker container
-make check-links   # Check all internal/external links
-make deploy-worker # Deploy Cloudflare Worker
-make deploy-infra  # Apply Terraform
+make check-links       # Check all internal/external links
+make newsletter-preview # Dry-run newsletter (no emails sent)
+make newsletter-send   # Send newsletter to all subscribers
+make deploy-worker     # Deploy Cloudflare Worker
+make deploy-infra      # Apply Terraform
 ```
+
+## Sending a Newsletter
+
+```bash
+# 1. Write your content as an HTML fragment (see scripts/newsletter-example.html)
+# 2. Set environment variables
+export BREVO_API_KEY="your-key"
+export D1_DATABASE_ID="your-d1-id"
+export CLOUDFLARE_ACCOUNT_ID="your-account-id"
+export CLOUDFLARE_API_TOKEN="your-api-token"
+
+# 3. Preview (dry run — no emails sent)
+node scripts/send-newsletter.js --subject "HB2089 Update" --content scripts/newsletter-example.html --dry-run
+
+# 4. Send to all subscribers
+node scripts/send-newsletter.js --subject "HB2089 Update" --content your-content.html
+```
+
+The script reads subscribers from D1, merges your content into `scripts/newsletter-template.html`, and sends individually via Brevo.
+
+## Anti-Spam Measures
+
+| Measure | Implementation |
+|---------|---------------|
+| 1 email per sender | `UNIQUE` constraint on `sender_email` in D1 |
+| 4 emails per IP | D1 count query before send |
+| US-only geo-block | `request.cf.country` check in Worker |
+| CAPTCHA | Cloudflare Turnstile (server-side verification) |
+| Rep email validation | Must be `@house.mo.gov` domain |
+| Honeypot field | Hidden form field for bot traps |
+| Input sanitization | HTML stripping, 5000 char cap |
+| Request size limit | 10KB max POST body |
+| CORS | Restricted to `https://movets.org` |
 
 ## Updating District Data
 

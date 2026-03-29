@@ -74,9 +74,12 @@ Sent via MoVets.org — Non-partisan veteran advocacy for HB2089
 |---------|-----|
 | Turnstile CAPTCHA | Server-side token verification (bot prevention) |
 | Honeypot field | Hidden form field (simple bot trap) |
-| Email uniqueness | D1 UNIQUE constraint on `sender_email` |
-| IP rate limit | Max 3 emails per IP (D1 count query) |
-| Input sanitization | HTML tag stripping, length cap |
+| Email uniqueness | D1 UNIQUE constraint on `sender_email` (1 per sender) |
+| IP rate limit | Max 4 emails per IP (D1 count query) |
+| US geo-block | `request.cf.country` must be `US` |
+| Rep email validation | Must match `@house.mo.gov` domain |
+| Request size limit | 10KB max POST body |
+| Input sanitization | HTML tag stripping, 5000 char cap |
 | CORS | Restricted to `https://movets.org` |
 | No client secrets | Brevo API key is Worker-side only |
 
@@ -99,7 +102,43 @@ CREATE TABLE emails (
 );
 
 CREATE INDEX idx_ip ON emails(ip_address);  -- fast IP count queries
+
+CREATE TABLE subscribers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT NOT NULL UNIQUE,
+  subscribed_at TEXT DEFAULT (datetime('now')),
+  unsubscribed_at TEXT
+);
 ```
+
+---
+
+## Newsletter System
+
+### Subscription flow
+
+1. User enters email in footer subscribe form (present on all 6 pages)
+2. `subscribe.js` POSTs `{ email }` to Worker `/subscribe` endpoint
+3. Worker validates email, normalizes to lowercase, inserts into `subscribers` table
+4. Duplicate subscriptions silently succeed (no information leak)
+
+### Sending a newsletter
+
+```bash
+node scripts/send-newsletter.js --subject "Title" --content content.html [--dry-run]
+```
+
+1. Script queries D1 for all active subscribers (`unsubscribed_at IS NULL`)
+2. Reads `scripts/newsletter-template.html` and injects content + subject
+3. Sends individually via Brevo API (100ms delay between sends)
+4. `--dry-run` lists recipients and saves preview to `/tmp/newsletter-preview.html`
+
+### Worker endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/send-email` | POST | Contact form → representative email |
+| `/subscribe` | POST | Newsletter subscription |
 
 ---
 
@@ -177,12 +216,13 @@ movets.org/
 │   │   └── styles.css                 # Tailwind build output (generated)
 │   ├── js/
 │   │   ├── contact.js                 # Form handler, Turnstile, validation
+│   │   ├── subscribe.js               # Newsletter subscription handler
 │   │   ├── map.js                     # Leaflet map, district rendering
 │   │   └── zip-lookup.js              # ZIP geocoding + point-in-polygon
 │   └── data/
 │       └── mo-house-districts.geojson # 163 districts (boundaries + rep info)
 ├── worker/                            # Cloudflare Worker (API backend)
-│   ├── src/index.js                   # POST /send-email handler
+│   ├── src/index.js                   # API handler (send-email, subscribe)
 │   ├── wrangler.toml                  # Worker config + D1 binding
 │   ├── schema.sql                     # D1 SQLite schema
 │   └── package.json                   # Wrangler dependency
@@ -194,6 +234,9 @@ movets.org/
 ├── scripts/
 │   ├── merge-reps.js                  # Merge rep data into GeoJSON
 │   ├── check-links.js                 # Site link checker
+│   ├── send-newsletter.js             # CLI newsletter sender
+│   ├── newsletter-template.html       # Newsletter HTML template
+│   ├── newsletter-example.html        # Example content
 │   └── generate_architecture_diagrams.py
 ├── Dockerfile                         # Multi-stage: node → nginx:alpine
 ├── docker-compose.yml                 # Docker Compose (port 8080)

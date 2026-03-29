@@ -1,4 +1,4 @@
-.PHONY: dev build serve docker docker-run check-links deploy-worker deploy-infra clean
+.PHONY: dev build serve docker docker-run check-links newsletter-preview newsletter-send deploy-worker deploy-infra clean
 
 # --- Local Development ---
 
@@ -26,6 +26,14 @@ docker-run: docker ## Build and run Docker container
 
 check-links: ## Check all links in the site
 	node scripts/check-links.js
+
+# --- Newsletter ---
+
+newsletter-preview: ## Preview newsletter (dry run, no emails sent)
+	node scripts/send-newsletter.js --subject "HB2089 Update" --content scripts/newsletter-example.html --dry-run
+
+newsletter-send: ## Send newsletter to all subscribers
+	node scripts/send-newsletter.js --subject "HB2089 Update" --content scripts/newsletter-example.html
 
 # --- Deployment ---
 

@@ -1,4 +1,4 @@
--- MoVets.org email log and rate limiting schema
+-- MoVets.org email log, rate limiting, and newsletter schema
 -- Applied to Cloudflare D1 (SQLite)
 
 CREATE TABLE IF NOT EXISTS emails (
@@ -15,3 +15,10 @@ CREATE TABLE IF NOT EXISTS emails (
 );
 
 CREATE INDEX IF NOT EXISTS idx_ip ON emails(ip_address);
+
+CREATE TABLE IF NOT EXISTS subscribers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT NOT NULL UNIQUE,
+  subscribed_at TEXT DEFAULT (datetime('now')),
+  unsubscribed_at TEXT
+);
