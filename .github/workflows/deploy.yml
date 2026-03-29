@@ -14,13 +14,28 @@ on:
       - 'package.json'
 
 jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      terraform: ${{ steps.filter.outputs.terraform }}
+      worker: ${{ steps.filter.outputs.worker }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            terraform:
+              - 'terraform/**'
+            worker:
+              - 'worker/**'
+
   terraform:
     name: Deploy Terraform
+    needs: changes
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      contains(toJSON(github.event.commits.*.modified), 'terraform/') ||
-      contains(toJSON(github.event.commits.*.added), 'terraform/')
+    if: needs.changes.outputs.terraform == 'true' || github.event_name == 'workflow_dispatch'
     defaults:
       run:
         working-directory: terraform
@@ -61,11 +76,9 @@ jobs:
 
   worker:
     name: Deploy Worker
+    needs: changes
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      contains(toJSON(github.event.commits.*.modified), 'worker/') ||
-      contains(toJSON(github.event.commits.*.added), 'worker/')
+    if: needs.changes.outputs.worker == 'true' || github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v4
