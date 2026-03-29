@@ -543,6 +543,36 @@ img { max-width: 100%; height: auto; }
 @media (max-width: 768px) {
   .footer-inner { grid-template-columns: 1fr; gap: 32px; }
   .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .newsletter-form { flex-direction: column; }
+}
+
+/* ===== Mobile Responsive Fixes ===== */
+@media (max-width: 768px) {
+  /* Section headings */
+  .section-heading { font-size: 28px; line-height: 36px; }
+  .section-subheading { font-size: 16px; }
+  .section { padding: 60px 16px; }
+
+  /* CTA banner */
+  .cta-banner { padding: 48px 24px; border-radius: 16px; }
+  .cta-banner h2 { font-size: 28px; line-height: 36px; }
+  .cta-banner p { font-size: 16px; }
+
+  /* Buttons */
+  .btn-lg { padding: 14px 28px; font-size: 16px; }
+
+  /* Map */
+  #map { min-height: 350px; height: 60vh; }
+
+  /* Inline 3-column grids → 1 column */
+  .steps-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .why-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+
+  /* Inline 2-column grid → 1 column */
+  .contact-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+
+  /* Large stat numbers in cards */
+  .why-grid .card div:first-child { font-size: 36px !important; }
 }
 
 /* ===== Map Specific ===== */
