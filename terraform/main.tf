@@ -24,7 +24,7 @@ resource "cloudflare_d1_database" "email_log" {
 # -----------------------------------------------------------------------------
 # Worker Script
 # -----------------------------------------------------------------------------
-resource "cloudflare_worker_script" "api" {
+resource "cloudflare_workers_script" "api" {
   account_id = var.cloudflare_account_id
   name       = "movets-api"
   content    = file("${path.module}/../worker/src/index.js")
