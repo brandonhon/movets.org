@@ -3,7 +3,8 @@
 
 (function () {
   // TODO: Replace with your Cloudflare Worker URL after deployment
-  const API_URL = 'https://movets-api.YOUR_ACCOUNT.workers.dev/subscribe';
+  // const API_URL = 'https://movets-api.YOUR_ACCOUNT.workers.dev/subscribe';
+  const API_URL = 'http://localhost:8787/subscribe';
 
   document.querySelectorAll('.newsletter-form').forEach(function (form) {
     form.removeAttribute('onsubmit');
@@ -16,7 +17,7 @@
       const email = input ? input.value.trim() : '';
 
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showMessage(form, 'Please enter a valid email address.', '#DC1E35');
+        showPopup('Please enter a valid email address.', false);
         return;
       }
 
@@ -33,13 +34,13 @@
         const data = await res.json();
 
         if (res.ok) {
-          showMessage(form, 'Subscribed! We\'ll keep you updated on HB2089.', '#16a34a');
+          showPopup('Subscribed! We\'ll keep you updated on HB2089.', true);
           input.value = '';
         } else {
-          showMessage(form, data.error || 'Something went wrong. Please try again.', '#DC1E35');
+          showPopup(data.error || 'Something went wrong. Please try again.', false);
         }
       } catch (err) {
-        showMessage(form, 'Connection error. Please try again.', '#DC1E35');
+        showPopup('Connection error. Please try again.', false);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Subscribe';
@@ -47,15 +48,43 @@
     });
   });
 
-  function showMessage(form, text, color) {
-    let msg = form.querySelector('.subscribe-msg');
-    if (!msg) {
-      msg = document.createElement('p');
-      msg.className = 'subscribe-msg';
-      msg.style.cssText = 'font-size:13px;margin-top:8px;';
-      form.appendChild(msg);
-    }
+  function showPopup(text, success) {
+    // Remove existing popup if any
+    var existing = document.getElementById('subscribe-popup');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'subscribe-popup';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(14,18,30,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px;';
+
+    var box = document.createElement('div');
+    box.style.cssText = 'background:#fff;border-radius:16px;padding:40px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);';
+
+    var icon = document.createElement('div');
+    icon.style.cssText = 'font-size:48px;margin-bottom:16px;';
+    icon.textContent = success ? '\u2705' : '\u274C';
+
+    var heading = document.createElement('h3');
+    heading.style.cssText = 'font-size:22px;font-weight:700;color:#0E121E;margin-bottom:12px;';
+    heading.textContent = success ? 'You\'re Subscribed!' : 'Oops!';
+
+    var msg = document.createElement('p');
+    msg.style.cssText = 'font-size:16px;line-height:26px;color:#53565E;margin-bottom:24px;';
     msg.textContent = text;
-    msg.style.color = color;
+
+    var closeBtn = document.createElement('button');
+    closeBtn.textContent = success ? 'Got it' : 'Close';
+    closeBtn.style.cssText = 'background:' + (success ? '#FF344C' : '#26385E') + ';color:#fff;border:none;padding:12px 32px;border-radius:80px;font-size:16px;font-weight:600;cursor:pointer;';
+
+    function close() { overlay.remove(); }
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+
+    box.appendChild(icon);
+    box.appendChild(heading);
+    box.appendChild(msg);
+    box.appendChild(closeBtn);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
   }
 })();
