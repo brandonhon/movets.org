@@ -8,6 +8,19 @@ terraform {
       version = "~> 4.0"
     }
   }
+
+  backend "s3" {
+    bucket                      = "movets-terraform-state"
+    key                         = "terraform.tfstate"
+    region                      = "auto"
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    force_path_style            = true
+    # endpoint, access_key, secret_key passed via:
+    #   terraform init -backend-config="endpoint=..." -backend-config="access_key=..." -backend-config="secret_key=..."
+    # or via env vars AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY + endpoint in -backend-config
+  }
 }
 
 provider "cloudflare" {

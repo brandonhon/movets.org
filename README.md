@@ -46,6 +46,8 @@ Go to repo **Settings > Secrets and variables > Actions** and add all of the fol
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare > Workers & Pages > right sidebar |
 | `BREVO_API_KEY` | Brevo > Settings > SMTP & API > API Keys |
 | `TURNSTILE_SECRET_KEY` | Cloudflare > Turnstile > your widget > Secret Key |
+| `R2_ACCESS_KEY_ID` | Cloudflare > R2 > Manage R2 API Tokens > Access Key ID |
+| `R2_SECRET_ACCESS_KEY` | Cloudflare > R2 > Manage R2 API Tokens > Secret Access Key |
 
 **Variables** (non-sensitive — used by GitHub Actions for Terraform):
 
