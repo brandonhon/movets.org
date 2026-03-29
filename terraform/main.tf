@@ -1,6 +1,6 @@
 # MoVets.org Cloudflare Infrastructure — Worker, D1, Turnstile, Pages
 terraform {
-  required_version = ">= 1.5"
+  required_version = ">= 1.9"
 
   required_providers {
     cloudflare = {
@@ -10,16 +10,20 @@ terraform {
   }
 
   backend "s3" {
-    bucket                      = "movets-terraform-state"
-    key                         = "terraform.tfstate"
-    region                      = "auto"
+    bucket = "movets-terraform-state"
+    key    = "terraform.tfstate"
+    region = "auto"
+
     skip_credentials_validation = true
     skip_metadata_api_check     = true
     skip_region_validation      = true
-    force_path_style            = true
-    # endpoint, access_key, secret_key passed via:
-    #   terraform init -backend-config="endpoint=..." -backend-config="access_key=..." -backend-config="secret_key=..."
-    # or via env vars AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY + endpoint in -backend-config
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
+    use_path_style              = true
+
+    # R2 endpoint passed at init time:
+    #   terraform init -backend-config="endpoints={s3=\"https://<account_id>.r2.cloudflarestorage.com\"}"
+    #   -backend-config="access_key=..." -backend-config="secret_key=..."
   }
 }
 
