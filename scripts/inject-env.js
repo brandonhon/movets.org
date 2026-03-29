@@ -29,6 +29,8 @@ if (workerUrl) {
   replacements['https://movets-api.YOUR_ACCOUNT.workers.dev/send-email'] = `${workerUrl}/send-email`;
   replacements['http://localhost:8787/subscribe'] = `${workerUrl}/subscribe`;
   replacements['https://movets-api.YOUR_ACCOUNT.workers.dev/subscribe'] = `${workerUrl}/subscribe`;
+  replacements['http://localhost:8787/contact'] = `${workerUrl}/contact`;
+  replacements['https://movets-api.YOUR_ACCOUNT.workers.dev/contact'] = `${workerUrl}/contact`;
 }
 
 function findFiles(dir, exts) {

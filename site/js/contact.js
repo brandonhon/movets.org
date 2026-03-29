@@ -151,10 +151,11 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // Get Turnstile token (skip check if widget not loaded, e.g. local dev)
+  // Get Turnstile token (skip check if local dev or widget not loaded)
+  const isLocalDev = API_URL.includes('localhost');
   const turnstileEl = document.querySelector('[name="cf-turnstile-response"]');
   const turnstileToken = turnstileEl ? turnstileEl.value : '';
-  if (turnstileEl && !turnstileToken) {
+  if (!isLocalDev && turnstileEl && !turnstileToken) {
     status.textContent = 'Please complete the CAPTCHA verification.';
     status.style.color = '#DC1E35';
     return;

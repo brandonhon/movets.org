@@ -1,5 +1,5 @@
 variable "cloudflare_api_token" {
-  description = "Cloudflare API token with Workers, D1, and Turnstile permissions"
+  description = "Cloudflare API token with Workers, D1, Turnstile, and Pages permissions"
   type        = string
   sensitive   = true
 }
@@ -21,15 +21,20 @@ variable "brevo_api_key" {
   sensitive   = true
 }
 
-variable "turnstile_site_key" {
-  description = "Cloudflare Turnstile site key (public)"
-  type        = string
-}
-
 variable "turnstile_secret_key" {
   description = "Cloudflare Turnstile secret key"
   type        = string
   sensitive   = true
+}
+
+variable "cf_analytics_token" {
+  description = "Cloudflare Web Analytics token"
+  type        = string
+}
+
+variable "workers_subdomain" {
+  description = "Cloudflare Workers subdomain (found in Workers & Pages > Overview)"
+  type        = string
 }
 
 variable "github_owner" {

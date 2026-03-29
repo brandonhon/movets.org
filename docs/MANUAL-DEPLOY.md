@@ -31,10 +31,7 @@ Deploy MoVets.org without GitHub Actions — run everything from your local mach
 cd terraform
 
 cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars with your values:
-#   cloudflare_api_token, cloudflare_account_id, domain,
-#   brevo_api_key, turnstile_site_key, turnstile_secret_key,
-#   github_owner, github_repo
+# Edit terraform.tfvars — all variables are documented in the example file
 
 terraform init
 terraform plan
@@ -43,9 +40,12 @@ terraform apply
 
 Note the outputs:
 - `d1_database_id` — update in `worker/wrangler.toml`
-- `turnstile_site_key` — use in Step 5
-- `worker_url` — use in Step 5
+- `worker_url` — your Worker API URL
+- `turnstile_site_key` — auto-configured in Pages build env by Terraform
 - `pages_url` — your Cloudflare Pages URL
+- `dns_records` — CNAME records to add at your registrar
+
+Terraform automatically configures the Pages build environment variables (`TURNSTILE_SITE_KEY`, `CF_ANALYTICS_TOKEN`, `WORKER_URL`) so `inject-env.js` works at build time.
 
 ## 4. Deploy the Worker
 
@@ -91,7 +91,7 @@ If Terraform created the Pages project connected to GitHub, just push to `main`:
 git push origin main
 ```
 
-Pages auto-builds and deploys. Set the same 3 env vars (`TURNSTILE_SITE_KEY`, `CF_ANALYTICS_TOKEN`, `WORKER_URL`) in **Cloudflare Pages > Settings > Environment variables**.
+Pages auto-builds and deploys. Terraform already configured the build environment variables.
 
 ### Option B: Wrangler Pages Direct Upload
 
