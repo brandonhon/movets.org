@@ -1,3 +1,4 @@
+# MoVets.org Cloudflare Infrastructure — Worker, D1, Turnstile, Pages
 terraform {
   required_version = ">= 1.5"
 

@@ -1,3 +1,4 @@
+// MoVets.org Cloudflare Worker — API for email, subscribe, and contact
 const MAX_EMAILS_PER_IP = 4;
 const MAX_MESSAGE_LENGTH = 5000;
 const MAX_BODY_SIZE = 10000; // 10KB max request body
