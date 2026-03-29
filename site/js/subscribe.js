@@ -68,6 +68,7 @@
       img.alt = 'Success';
       img.width = 56;
       img.height = 56;
+      img.style.cssText = 'display:inline;';
       icon.appendChild(img);
     } else {
       icon.style.fontSize = '48px';
