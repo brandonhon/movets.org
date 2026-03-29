@@ -1,4 +1,4 @@
-name: Deploy Infrastructure
+name: Deploy
 
 on:
   workflow_dispatch:
@@ -7,12 +7,20 @@ on:
     paths:
       - 'terraform/**'
       - 'worker/**'
+      - 'site/**'
+      - 'scripts/inject-env.js'
+      - 'tailwind.config.js'
+      - 'tailwind.css'
+      - 'package.json'
 
 jobs:
   terraform:
     name: Deploy Terraform
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'terraform/') || github.event_name == 'workflow_dispatch'
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      contains(toJSON(github.event.commits.*.modified), 'terraform/') ||
+      contains(toJSON(github.event.commits.*.added), 'terraform/')
     defaults:
       run:
         working-directory: terraform
@@ -39,7 +47,6 @@ jobs:
           TF_VAR_github_repo: ${{ github.event.repository.name }}
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve
         env:
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -53,7 +60,10 @@ jobs:
   worker:
     name: Deploy Worker
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'worker/') || github.event_name == 'workflow_dispatch'
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      contains(toJSON(github.event.commits.*.modified), 'worker/') ||
+      contains(toJSON(github.event.commits.*.added), 'worker/')
 
     steps:
       - uses: actions/checkout@v4
