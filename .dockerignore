@@ -1,0 +1,15 @@
+node_modules/
+worker/
+terraform/
+scripts/
+docs/
+.git/
+.github/
+.claude/
+.venv/
+.DS_Store
+*.md
+Makefile
+docker-compose.yml
+.dockerignore
+.gitignore
