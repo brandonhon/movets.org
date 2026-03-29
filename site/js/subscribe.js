@@ -61,8 +61,18 @@
     box.style.cssText = 'background:#fff;border-radius:16px;padding:40px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);';
 
     var icon = document.createElement('div');
-    icon.style.cssText = 'font-size:48px;margin-bottom:16px;';
-    icon.textContent = success ? '\u2705' : '\u274C';
+    icon.style.cssText = 'margin-bottom:16px;';
+    if (success) {
+      var img = document.createElement('img');
+      img.src = 'icons/like.png';
+      img.alt = 'Success';
+      img.width = 56;
+      img.height = 56;
+      icon.appendChild(img);
+    } else {
+      icon.style.fontSize = '48px';
+      icon.textContent = '\u274C';
+    }
 
     var heading = document.createElement('h3');
     heading.style.cssText = 'font-size:22px;font-weight:700;color:#0E121E;margin-bottom:12px;';
