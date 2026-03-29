@@ -34,37 +34,38 @@ Pushes to `main` auto-deploy the site via Cloudflare Pages and trigger GitHub Ac
 - Cloudflare: create API token, Turnstile widget, Web Analytics site
 - Brevo: verify sender domain, get API key
 
-### 2. GitHub Secrets
+### 2. GitHub Secrets & Variables
 
-Go to repo **Settings > Secrets and variables > Actions**.
+Go to repo **Settings > Secrets and variables > Actions** and add all of the following.
 
-**Secrets** (sensitive):
+**Secrets** (sensitive — used by GitHub Actions for Terraform and Worker deploys):
 
-| Secret | Value | Where to find |
-|--------|-------|--------------|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API token | Profile > API Tokens |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID | Workers & Pages > right sidebar |
-| `BREVO_API_KEY` | Brevo transactional email API key | Brevo > Settings > SMTP & API > API Keys |
-| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key | Cloudflare > Turnstile > widget > Secret Key |
+| Secret | Where to find |
+|--------|--------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare > Profile > API Tokens > Create Token |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare > Workers & Pages > right sidebar |
+| `BREVO_API_KEY` | Brevo > Settings > SMTP & API > API Keys |
+| `TURNSTILE_SECRET_KEY` | Cloudflare > Turnstile > your widget > Secret Key |
 
-**Variables** (non-sensitive):
+**Variables** (non-sensitive — used by GitHub Actions for Terraform):
 
-| Variable | Value | Where to find |
-|----------|-------|--------------|
-| `WORKERS_SUBDOMAIN` | Workers subdomain (e.g. `bh-cloudflare-8d4`) | Workers & Pages > Overview |
-| `CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics token | Web Analytics > your site |
+| Variable | Where to find |
+|----------|--------------|
+| `WORKERS_SUBDOMAIN` | Cloudflare > Workers & Pages > Overview > "Your subdomain" (e.g. `bh-cloudflare-8d4`) |
+| `CF_ANALYTICS_TOKEN` | Cloudflare > Web Analytics > your site > JS snippet token |
+
+`github_owner` and `github_repo` are derived automatically from the repository — no manual setup needed.
 
 ### 3. Cloudflare Pages Environment Variables
 
-Terraform automatically configures these in the Pages project. If you need to set them manually:
+**Managed by Terraform** — no manual setup needed.
 
-**Cloudflare Pages > movets-org > Settings > Environment variables:**
+Terraform automatically sets these in the Pages build environment:
+- `TURNSTILE_SITE_KEY` — from the Terraform-created Turnstile widget
+- `CF_ANALYTICS_TOKEN` — from the `cf_analytics_token` variable
+- `WORKER_URL` — constructed from `workers_subdomain`
 
-- `TURNSTILE_SITE_KEY` — auto-set by Terraform from the Turnstile widget
-- `CF_ANALYTICS_TOKEN` — from Cloudflare Web Analytics
-- `WORKER_URL` — e.g. `https://movets-api.bh-cloudflare-8d4.workers.dev`
-
-These are injected into HTML/JS at build time by `scripts/inject-env.js`.
+These are injected into the HTML/JS at build time by `scripts/inject-env.js`.
 
 ### 4. DNS Setup
 
