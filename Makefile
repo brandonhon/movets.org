@@ -1,4 +1,4 @@
-.PHONY: dev build serve docker docker-run check-links newsletter-preview newsletter-send deploy-worker deploy-infra clean
+.PHONY: dev build serve docker docker-run check-links dashboard newsletter-preview newsletter-send deploy-worker deploy-infra clean
 
 # --- Local Development ---
 
@@ -26,6 +26,20 @@ docker-run: docker ## Build and run Docker container
 
 check-links: ## Check all links in the site
 	node scripts/check-links.js
+
+# --- Dashboard ---
+
+dashboard: ## Show email + subscriber stats from D1
+	node scripts/visualize.js
+
+dashboard-emails: ## Show email stats only
+	node scripts/visualize.js --emails
+
+dashboard-subs: ## Show subscriber stats only
+	node scripts/visualize.js --subscribers
+
+export-csv: ## Export emails and subscribers to CSV
+	node scripts/visualize.js --export-csv
 
 # --- Newsletter ---
 

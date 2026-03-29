@@ -13,3 +13,6 @@ terraform/terraform.tfvars
 
 # Docker
 .docker/
+
+# Data exports
+data/*.csv
