@@ -85,6 +85,16 @@ resource "cloudflare_pages_project" "site" {
     root_dir        = ""
   }
 
+  deployment_configs {
+    production {
+      environment_variables = {
+        TURNSTILE_SITE_KEY = cloudflare_turnstile_widget.contact_form.id
+        CF_ANALYTICS_TOKEN = var.cf_analytics_token
+        WORKER_URL         = "https://movets-api.${var.workers_subdomain}.workers.dev"
+      }
+    }
+  }
+
   source {
     type = "github"
     config {

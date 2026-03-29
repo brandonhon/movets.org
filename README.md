@@ -40,28 +40,29 @@ Go to repo **Settings > Secrets and variables > Actions**.
 
 **Secrets** (sensitive):
 
-| Secret | Value |
-|--------|-------|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API token |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
-| `BREVO_API_KEY` | Brevo transactional email API key |
-| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key |
+| Secret | Value | Where to find |
+|--------|-------|--------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token | Profile > API Tokens |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID | Workers & Pages > right sidebar |
+| `BREVO_API_KEY` | Brevo transactional email API key | Brevo > Settings > SMTP & API > API Keys |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key | Cloudflare > Turnstile > widget > Secret Key |
 
 **Variables** (non-sensitive):
 
-| Variable | Value |
-|----------|-------|
-| `TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key |
-| `CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics token |
-| `WORKER_URL` | e.g. `https://movets-api.xxx.workers.dev` |
+| Variable | Value | Where to find |
+|----------|-------|--------------|
+| `WORKERS_SUBDOMAIN` | Workers subdomain (e.g. `bh-cloudflare-8d4`) | Workers & Pages > Overview |
+| `CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics token | Web Analytics > your site |
 
 ### 3. Cloudflare Pages Environment Variables
 
-Set the same 3 variables in **Cloudflare Pages > your project > Settings > Environment variables**:
+Terraform automatically configures these in the Pages project. If you need to set them manually:
 
-- `TURNSTILE_SITE_KEY`
-- `CF_ANALYTICS_TOKEN`
-- `WORKER_URL`
+**Cloudflare Pages > movets-org > Settings > Environment variables:**
+
+- `TURNSTILE_SITE_KEY` — auto-set by Terraform from the Turnstile widget
+- `CF_ANALYTICS_TOKEN` — from Cloudflare Web Analytics
+- `WORKER_URL` — e.g. `https://movets-api.bh-cloudflare-8d4.workers.dev`
 
 These are injected into HTML/JS at build time by `scripts/inject-env.js`.
 
