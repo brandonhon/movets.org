@@ -53,6 +53,11 @@ Terraform automatically configures the Pages build environment variables (`TURNS
 cd worker
 npm install
 
+# Run migrations (safe to re-run — errors on already-applied are expected)
+for f in migrations/*.sql; do
+  npx wrangler d1 execute movets-email-log --remote --file="$f" || echo "Skipped: $f"
+done
+
 # Initialize the D1 database schema
 npm run db:init
 

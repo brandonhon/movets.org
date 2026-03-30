@@ -10,7 +10,7 @@ MoVets.org is a static advocacy website for Missouri HB2089 (veteran property ta
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| **Frontend** | HTML, Tailwind CSS, Vanilla JS | 6 static pages with interactive map and contact form |
+| **Frontend** | HTML, Tailwind CSS, Vanilla JS | 9 static pages with interactive map, contact form, impact dashboard |
 | **Map** | Leaflet.js + GeoJSON | 163 Missouri House district boundaries with rep data |
 | **Geocoding** | Nominatim + Census APIs | ZIP code to district/representative lookup |
 | **Backend** | Cloudflare Workers | Email submission handler (serverless) |
@@ -78,7 +78,7 @@ Sent via MoVets.org — Non-partisan veteran advocacy for HB2089
 | Turnstile CAPTCHA | Server-side token verification (bot prevention) |
 | Honeypot field | Hidden form field (simple bot trap) |
 | Email uniqueness | D1 UNIQUE constraint on `sender_email` (1 per sender) |
-| IP rate limit | Max 4 emails per IP (D1 count query) |
+| IP rate limit | Max 75 emails per IP (D1 count query) |
 | Rep email validation | Must match `@house.mo.gov` domain |
 | Request size limit | 10KB max POST body |
 | Input sanitization | HTML tag stripping, 5000 char cap |
@@ -108,6 +108,7 @@ CREATE INDEX idx_ip ON emails(ip_address);  -- fast IP count queries
 CREATE TABLE subscribers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT NOT NULL UNIQUE,
+  unsubscribe_token TEXT UNIQUE,           -- token for unsubscribe links
   subscribed_at TEXT DEFAULT (datetime('now')),
   unsubscribed_at TEXT
 );
@@ -119,10 +120,18 @@ CREATE TABLE subscribers (
 
 ### Subscription flow
 
-1. User enters email in footer subscribe form (present on all 6 pages)
+1. User enters email in footer subscribe form (present on all pages)
 2. `subscribe.js` POSTs `{ email }` to Worker `/subscribe` endpoint
-3. Worker validates email, normalizes to lowercase, inserts into `subscribers` table
-4. Duplicate subscriptions silently succeed (no information leak)
+3. Worker validates email, normalizes to lowercase, generates `unsubscribe_token` (UUID), inserts into `subscribers` table
+4. Welcome email sent via Brevo with token-based unsubscribe link
+5. Duplicate subscriptions silently succeed (no information leak)
+
+### Unsubscribe flow
+
+1. User clicks unsubscribe link in email (`/unsubscribe?token=xxx`)
+2. Worker validates token against `subscribers.unsubscribe_token`
+3. Sets `unsubscribed_at` timestamp
+4. Redirects to `unsubscribed.html` with status (`success`, `already`, `invalid`)
 
 ### Sending a newsletter
 
@@ -142,6 +151,8 @@ node scripts/send-newsletter.js --subject "Title" --content content.html [--dry-
 | `/send-email` | POST | Take Action form → representative email |
 | `/subscribe` | POST | Newsletter subscription + welcome email |
 | `/contact` | POST | Contact page form → `info@movets.org` |
+| `/stats` | GET | Aggregate counts (total emails, by district, subscribers) |
+| `/unsubscribe` | GET | Token-based unsubscribe → redirects to confirmation page |
 
 ---
 
@@ -213,7 +224,10 @@ movets.org/
 │   ├── take-action.html               # Interactive map + contact form
 │   ├── about.html                     # Mission & values
 │   ├── contact.html                   # General contact + rep lookup
+│   ├── impact.html                    # Live email/subscriber stats dashboard
+│   ├── privacy.html                   # Data collection & usage transparency
 │   ├── data-sources.html              # Data attribution
+│   ├── unsubscribed.html              # Unsubscribe confirmation page
 │   ├── css/
 │   │   ├── style.css                  # Custom component CSS (~1300 lines)
 │   │   └── styles.css                 # Tailwind build output (generated)
@@ -222,13 +236,17 @@ movets.org/
 │   │   ├── contact-general.js         # Contact page form handler (info@movets.org)
 │   │   ├── subscribe.js               # Newsletter subscription handler
 │   │   ├── map.js                     # Leaflet map, district rendering
-│   │   └── zip-lookup.js              # ZIP geocoding + point-in-polygon
+│   │   ├── zip-lookup.js              # ZIP geocoding + point-in-polygon
+│   │   ├── impact.js                  # Impact page stats loader (5min refresh)
+│   │   ├── footer-stats.js            # Footer email count loader (5min refresh)
+│   │   └── coming-soon.js             # "Coming Soon" popup for placeholder links
 │   └── data/
 │       └── mo-house-districts.geojson # 163 districts (boundaries + rep info)
 ├── worker/                            # Cloudflare Worker (API backend)
-│   ├── src/index.js                   # API handler (send-email, subscribe, contact)
+│   ├── src/index.js                   # API handler (send-email, subscribe, contact, stats, unsubscribe)
 │   ├── wrangler.toml                  # Worker config + D1 binding
 │   ├── schema.sql                     # D1 SQLite schema
+│   ├── migrations/                    # D1 schema migrations (run before schema.sql in CI)
 │   └── package.json                   # Wrangler dependency
 ├── terraform/                         # Cloudflare infrastructure
 │   ├── main.tf                        # Worker, D1 database, Turnstile widget

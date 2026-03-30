@@ -6,8 +6,11 @@ A multi-page static website supporting Missouri HB2089 — the Disabled Veterans
 
 - **Interactive district map** — All 163 Missouri House districts colored by party (R/D)
 - **Contact form** — Send messages to representatives via Cloudflare Worker + Brevo
-- **Newsletter** — Footer subscribe form + CLI send script
-- **Anti-spam** — 1 email per sender, 4 per IP, Turnstile CAPTCHA, repEmail domain validation
+- **Newsletter** — Footer subscribe form + CLI send script + token-based unsubscribe
+- **Impact page** — Live email/subscriber counts pulled from D1 via `/stats` endpoint
+- **Privacy page** — Data collection and usage transparency
+- **Anti-spam** — 1 email per sender, 75 per IP, Turnstile CAPTCHA, repEmail domain validation
+- **Geo-blocking** — US-only access via CF-IPCountry header
 - **SEO** — Open Graph, Twitter Cards, canonical URLs, JSON-LD, sitemap
 
 ## Tech Stack
@@ -113,16 +116,17 @@ git push -u origin my-feature
 ```
 .
 ├── site/                              # Static site files
-│   ├── *.html                         # 6 pages (index, about-bill, take-action, about, contact, data-sources)
+│   ├── *.html                         # 9 pages (index, about-bill, take-action, about, contact, data-sources, impact, privacy, unsubscribed)
 │   ├── robots.txt                     # Search engine crawl rules
 │   ├── sitemap.xml                    # Sitemap for search engines
 │   ├── css/                           # Tailwind + custom CSS
 │   ├── icons/                         # Flaticon.com PNG icons
-│   ├── js/                            # contact.js, contact-general.js, subscribe.js, map.js, zip-lookup.js
+│   ├── js/                            # contact.js, contact-general.js, subscribe.js, map.js, zip-lookup.js, impact.js, footer-stats.js, coming-soon.js
 │   └── data/                          # GeoJSON district boundaries
 ├── worker/                            # Cloudflare Worker API
-│   ├── src/index.js                   # POST /send-email, /subscribe, /contact
+│   ├── src/index.js                   # POST /send-email, /subscribe, /contact; GET /stats, /unsubscribe
 │   ├── schema.sql                     # D1 database schema
+│   ├── migrations/                    # D1 schema migrations (run before schema.sql in CI)
 │   └── wrangler.toml                  # Worker config
 ├── terraform/                         # Cloudflare infrastructure (Worker, D1, Turnstile, Pages)
 ├── scripts/                           # Utilities (link checker, newsletter, dashboard, env injection)
@@ -163,7 +167,7 @@ make clean               # Remove build artifacts
 | Measure | Implementation |
 |---------|---------------|
 | 1 email per sender | `UNIQUE` constraint on `sender_email` in D1 |
-| 4 emails per IP | D1 count query before send |
+| 75 emails per IP | D1 count query before send |
 | CAPTCHA | Cloudflare Turnstile (server-side verification) |
 | Rep email validation | Must be `@house.mo.gov` domain |
 | Honeypot field | Hidden form field for bot traps |
