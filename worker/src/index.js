@@ -23,7 +23,7 @@ function isRepEmail(email) {
 function corsHeaders(origin) {
   return {
     'Access-Control-Allow-Origin': origin,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
 }
@@ -413,6 +413,20 @@ async function handleContact(request, env, origin) {
   return json({ success: true, message: 'Message sent successfully.' }, 200, origin);
 }
 
+async function handleStats(env, origin) {
+  const [totalEmails, byDistrict, totalSubscribers] = await Promise.all([
+    env.DB.prepare('SELECT COUNT(*) as count FROM emails').first(),
+    env.DB.prepare('SELECT district, COUNT(*) as count FROM emails GROUP BY district ORDER BY district').all(),
+    env.DB.prepare('SELECT COUNT(*) as count FROM subscribers WHERE unsubscribed_at IS NULL').first(),
+  ]);
+
+  return json({
+    totalEmails: totalEmails?.count || 0,
+    byDistrict: byDistrict?.results || [],
+    totalSubscribers: totalSubscribers?.count || 0,
+  }, 200, origin);
+}
+
 // --- Main entry ---
 
 export default {
@@ -429,11 +443,21 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
+    const url = new URL(request.url);
+
+    // Allow GET for /stats
+    if (request.method === 'GET' && url.pathname === '/stats') {
+      try {
+        return await handleStats(env, origin);
+      } catch (err) {
+        console.error('Worker error:', err);
+        return json({ error: 'An error occurred. Please try again later.' }, 500, origin);
+      }
+    }
+
     if (request.method !== 'POST') {
       return json({ error: 'Method not allowed.' }, 405, origin);
     }
-
-    const url = new URL(request.url);
 
     try {
       switch (url.pathname) {

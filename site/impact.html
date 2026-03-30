@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impact | MoVets.org</title>
+  <meta name="description" content="See how many Missourians have contacted their representatives in support of HB2089 through MoVets.org.">
+  <link rel="canonical" href="https://movets.org/impact.html">
+  <meta property="og:title" content="Impact | MoVets.org">
+  <meta property="og:description" content="See how many Missourians have contacted their representatives in support of HB2089 through MoVets.org.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://movets.org/impact.html">
+  <meta property="og:site_name" content="MoVets.org">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Impact | MoVets.org">
+  <meta name="twitter:description" content="See how many Missourians have contacted their representatives in support of HB2089.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="8" fill="#FF344C"/>
+          <path d="M10 18L14 10L18 18L22 10L26 18" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 24H28" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        MoVets
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about-bill.html">The Bill</a>
+        <a href="take-action.html">Take Action</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="impact.html" class="active">Impact</a>
+        <a href="data-sources.html">Data &amp; Sources</a>
+      </div>
+      <a href="take-action.html" class="btn btn-primary btn-sm nav-cta">Take Action</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="about-bill.html">The Bill</a>
+    <a href="take-action.html">Take Action</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="impact.html">Impact</a>
+    <a href="data-sources.html">Data &amp; Sources</a>
+  </div>
+
+  <main>
+    <!-- Page Header -->
+    <div class="page-header">
+      <span class="section-tag">Our Reach</span>
+      <h1>Impact</h1>
+      <p>See how Missourians are making their voices heard in support of HB2089.</p>
+    </div>
+
+    <section class="section">
+      <div style="max-width:900px;margin:0 auto;">
+        <!-- Summary Cards -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:48px;">
+          <div class="card" style="text-align:center;padding:40px;">
+            <div style="margin-bottom:12px;"><img src="icons/email.png" alt="Messages" width="48" height="48" style="display:inline;"></div>
+            <div id="total-emails" style="font-size:48px;font-weight:800;color:#FF344C;margin-bottom:8px;">--</div>
+            <div style="font-size:16px;color:#53565E;">Messages Sent to Representatives</div>
+          </div>
+          <div class="card" style="text-align:center;padding:40px;">
+            <div style="margin-bottom:12px;"><img src="icons/viral.png" alt="Subscribers" width="48" height="48" style="display:inline;"></div>
+            <div id="total-subscribers" style="font-size:48px;font-weight:800;color:#26385E;margin-bottom:8px;">--</div>
+            <div style="font-size:16px;color:#53565E;">Newsletter Subscribers</div>
+          </div>
+        </div>
+
+        <!-- District Breakdown -->
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div style="padding:24px 24px 16px;">
+            <h2 style="font-size:22px;font-weight:700;color:#0E121E;margin-bottom:4px;">Messages by District</h2>
+            <p style="font-size:14px;color:#717379;">How many constituents have written to each district's representative.</p>
+          </div>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="background:#F7F8F9;">
+                <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:600;color:#53565E;text-transform:uppercase;letter-spacing:0.5px;">District</th>
+                <th style="padding:12px 16px;text-align:right;font-size:13px;font-weight:600;color:#53565E;text-transform:uppercase;letter-spacing:0.5px;">Messages</th>
+              </tr>
+            </thead>
+            <tbody id="district-table-body">
+              <tr>
+                <td colspan="2" style="padding:24px 16px;text-align:center;color:#717379;">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p style="text-align:center;margin-top:24px;font-size:13px;color:#717379;">Stats update every 5 minutes.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" style="color:#fff;margin-bottom:8px;">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="#FF344C"/>
+            <path d="M10 18L14 10L18 18L22 10L26 18" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 24H28" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          MoVets
+        </a>
+        <p>Supporting Missouri's disabled veterans through advocacy for HB2089.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Twitter/X"><img src="icons/twitter.png" alt="X" width="20" height="20" style="display:inline;"></a>
+          <a href="https://github.com/brandonhon/movets.org" target="_blank" rel="noopener" aria-label="GitHub"><img src="icons/github.png" alt="GitHub" width="20" height="20" style="display:inline;"></a>
+        </div>
+      </div>
+      <div>
+        <h4>Pages</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about-bill.html">The Bill</a></li>
+          <li><a href="take-action.html">Take Action</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="impact.html">Impact</a></li>
+          <li><a href="data-sources.html">Data &amp; Sources</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="footer-links">
+          <li><a href="https://house.mo.gov/Bill.aspx?bill=HB2089&year=2026" target="_blank" rel="noopener">HB2089 Full Text</a></li>
+          <li><a href="https://house.mo.gov" target="_blank" rel="noopener">MO House</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Stay Updated</h4>
+        <p style="font-size:14px;color:#717379;margin-bottom:16px;">Get updates on HB2089 and how you can help.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault();">
+          <input type="email" placeholder="Your email address">
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 MoVets.org. Non-partisan veteran advocacy.</span>
+      <span><a href="impact.html" style="color:#FF344C;text-decoration:none;"><span id="footer-email-count">--</span> messages sent</a> to state representatives.</span>
+      <span>Not affiliated with the State of Missouri.</span>
+    </div>
+  </footer>
+
+  <script src="js/impact.js"></script>
+  <script>
+    window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10); });
+    const navToggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    navToggle.addEventListener('click', () => mobileNav.classList.toggle('open'));
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileNav.classList.remove('open')));
+  </script>
+  <script src="js/subscribe.js"></script>
+  <script src="js/footer-stats.js"></script>
+  <!-- Cloudflare Web Analytics -->
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "YOUR_CF_ANALYTICS_TOKEN"}'></script>
+</body>
+</html>
