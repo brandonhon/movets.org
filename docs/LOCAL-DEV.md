@@ -62,7 +62,6 @@ brew install --cask docker
 | Take Action emails | Sent to representative | Sent to `DEV_TEST_EMAIL` if set |
 | Contact page emails | Sent to `info@movets.org` | Sent to `DEV_CONTACT_EMAIL` if set |
 | Console logging | Minimal | Full email details |
-| Geo-block | US only | Passes (no `request.cf` locally) |
 
 **Without** `BREVO_API_KEY` — emails are logged to the terminal but not sent.
 **With** `BREVO_API_KEY` + `DEV_TEST_EMAIL` — emails are sent to your test address for full e2e testing.

@@ -79,7 +79,6 @@ Sent via MoVets.org — Non-partisan veteran advocacy for HB2089
 | Honeypot field | Hidden form field (simple bot trap) |
 | Email uniqueness | D1 UNIQUE constraint on `sender_email` (1 per sender) |
 | IP rate limit | Max 4 emails per IP (D1 count query) |
-| US geo-block | `request.cf.country` must be `US` |
 | Rep email validation | Must match `@house.mo.gov` domain |
 | Request size limit | 10KB max POST body |
 | Input sanitization | HTML tag stripping, 5000 char cap |
