@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unsubscribed | MoVets.org</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="8" fill="#FF344C"/>
+          <path d="M10 18L14 10L18 18L22 10L26 18" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 24H28" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        MoVets
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about-bill.html">The Bill</a>
+        <a href="take-action.html">Take Action</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="impact.html">Our Impact</a>
+        <a href="data-sources.html">Data &amp; Sources</a>
+      </div>
+      <a href="take-action.html" class="btn btn-primary btn-sm nav-cta">Take Action</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="about-bill.html">The Bill</a>
+    <a href="take-action.html">Take Action</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="impact.html">Our Impact</a>
+    <a href="data-sources.html">Data &amp; Sources</a>
+  </div>
+
+  <main>
+    <div class="page-header" style="min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+      <div id="unsub-icon" style="font-size:48px;margin-bottom:16px;"></div>
+      <h1 id="unsub-heading" style="margin-bottom:12px;">Unsubscribed</h1>
+      <p id="unsub-message" style="max-width:500px;">You have been unsubscribed from MoVets.org updates.</p>
+      <a href="index.html" class="btn btn-primary" style="margin-top:24px;">Return Home</a>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var status = params.get('status');
+      var icon = document.getElementById('unsub-icon');
+      var heading = document.getElementById('unsub-heading');
+      var msg = document.getElementById('unsub-message');
+
+      if (status === 'success') {
+        icon.textContent = '\u2705';
+        heading.textContent = 'Unsubscribed';
+        msg.textContent = 'You have been unsubscribed from MoVets.org updates. We\u2019re sorry to see you go.';
+      } else if (status === 'already') {
+        icon.textContent = '\u2139\uFE0F';
+        heading.textContent = 'Already Unsubscribed';
+        msg.textContent = 'This email address has already been unsubscribed.';
+      } else {
+        icon.textContent = '\u26A0\uFE0F';
+        heading.textContent = 'Invalid Link';
+        msg.textContent = 'This unsubscribe link is invalid or has expired. If you need help, please contact us.';
+      }
+    })();
+
+    window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10); });
+    const navToggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    navToggle.addEventListener('click', () => mobileNav.classList.toggle('open'));
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileNav.classList.remove('open')));
+  </script>
+  <!-- Cloudflare Web Analytics -->
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "YOUR_CF_ANALYTICS_TOKEN"}'></script>
+</body>
+</html>

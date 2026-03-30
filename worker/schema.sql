@@ -19,6 +19,8 @@ CREATE INDEX IF NOT EXISTS idx_ip ON emails(ip_address);
 CREATE TABLE IF NOT EXISTS subscribers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT NOT NULL UNIQUE,
+  unsubscribe_token TEXT UNIQUE,
   subscribed_at TEXT DEFAULT (datetime('now')),
   unsubscribed_at TEXT
 );
+

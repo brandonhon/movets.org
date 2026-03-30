@@ -205,7 +205,7 @@ async function handleSendEmail(request, env, origin) {
   return json({ success: true, message: 'Message sent successfully.' }, 200, origin);
 }
 
-function getWelcomeEmailHtml() {
+function getWelcomeEmailHtml(unsubscribeUrl) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -257,14 +257,15 @@ function getWelcomeEmailHtml() {
     <div class="footer">
       <p>You received this because you subscribed to updates on <a href="https://movets.org">MoVets.org</a>.</p>
       <p><a href="https://movets.org">Visit MoVets.org</a></p>
-      <p style="margin-top:16px;font-size:12px;color:#53565E;">&copy; 2026 MoVets.org. Not affiliated with the State of Missouri.</p>
+      <p style="margin-top:16px;"><a href="${unsubscribeUrl}" style="color:#717379;font-size:12px;">Unsubscribe</a></p>
+      <p style="margin-top:8px;font-size:12px;color:#53565E;">&copy; 2026 MoVets.org. Not affiliated with the State of Missouri.</p>
     </div>
   </div>
 </body>
 </html>`;
 }
 
-function getWelcomeEmailText() {
+function getWelcomeEmailText(unsubscribeUrl) {
   return `Welcome to MoVets.org!
 
 Thank you for subscribing to updates on Missouri HB2089 \u2014 the Disabled Veterans Homestead Exemption bill.
@@ -283,7 +284,9 @@ Share: https://movets.org
 
 ---
 You received this because you subscribed to updates on MoVets.org.
-Visit: https://movets.org`;
+Visit: https://movets.org
+
+Unsubscribe: ${unsubscribeUrl}`;
 }
 
 async function handleSubscribe(request, env, origin) {
@@ -311,9 +314,13 @@ async function handleSubscribe(request, env, origin) {
     return json({ success: true, message: 'Thank you for subscribing!' }, 200, origin);
   }
 
+  const token = crypto.randomUUID();
+
   await env.DB.prepare(
-    'INSERT INTO subscribers (email) VALUES (?)'
-  ).bind(normalized).run();
+    'INSERT INTO subscribers (email, unsubscribe_token) VALUES (?, ?)'
+  ).bind(normalized, token).run();
+
+  const unsubscribeUrl = `${new URL(request.url).origin}/unsubscribe?token=${token}`;
 
   // Send welcome email
   if (env.BREVO_API_KEY) {
@@ -323,8 +330,8 @@ async function handleSubscribe(request, env, origin) {
         fromName: env.FROM_NAME || 'MoVets.org',
         to: normalized,
         subject: 'Welcome to MoVets.org \u2014 HB2089 Updates',
-        htmlContent: getWelcomeEmailHtml(),
-        textContent: getWelcomeEmailText(),
+        htmlContent: getWelcomeEmailHtml(unsubscribeUrl),
+        textContent: getWelcomeEmailText(unsubscribeUrl),
       });
       console.log(`Welcome email sent to: ${normalized}`);
     } catch (err) {
@@ -333,6 +340,7 @@ async function handleSubscribe(request, env, origin) {
     }
   } else {
     console.log(`[DEV] Would send welcome email to: ${normalized}`);
+    console.log(`  Unsubscribe URL: ${unsubscribeUrl}`);
   }
 
   return json({ success: true, message: 'Thank you for subscribing!' }, 200, origin);
@@ -427,6 +435,34 @@ async function handleStats(env, origin) {
   }, 200, origin);
 }
 
+async function handleUnsubscribe(request, env) {
+  const url = new URL(request.url);
+  const token = url.searchParams.get('token');
+  const siteOrigin = env.ALLOWED_ORIGIN || 'https://movets.org';
+
+  if (!token) {
+    return Response.redirect(`${siteOrigin}/unsubscribed.html?status=invalid`, 302);
+  }
+
+  const subscriber = await env.DB.prepare(
+    'SELECT id, unsubscribed_at FROM subscribers WHERE unsubscribe_token = ?'
+  ).bind(token).first();
+
+  if (!subscriber) {
+    return Response.redirect(`${siteOrigin}/unsubscribed.html?status=invalid`, 302);
+  }
+
+  if (subscriber.unsubscribed_at) {
+    return Response.redirect(`${siteOrigin}/unsubscribed.html?status=already`, 302);
+  }
+
+  await env.DB.prepare(
+    "UPDATE subscribers SET unsubscribed_at = datetime('now') WHERE unsubscribe_token = ?"
+  ).bind(token).run();
+
+  return Response.redirect(`${siteOrigin}/unsubscribed.html?status=success`, 302);
+}
+
 // --- Main entry ---
 
 export default {
@@ -445,10 +481,11 @@ export default {
 
     const url = new URL(request.url);
 
-    // Allow GET for /stats
-    if (request.method === 'GET' && url.pathname === '/stats') {
+    // Allow GET for /stats and /unsubscribe
+    if (request.method === 'GET') {
       try {
-        return await handleStats(env, origin);
+        if (url.pathname === '/stats') return await handleStats(env, origin);
+        if (url.pathname === '/unsubscribe') return await handleUnsubscribe(request, env);
       } catch (err) {
         console.error('Worker error:', err);
         return json({ error: 'An error occurred. Please try again later.' }, 500, origin);
