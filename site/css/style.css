@@ -573,6 +573,14 @@ img { max-width: 100%; height: auto; }
 
   /* Large stat numbers in cards */
   .why-grid .card div:first-child { font-size: 36px !important; }
+
+  /* Impact page summary cards → 1 column */
+  .impact-cards { grid-template-columns: 1fr !important; }
+  .impact-cards .card { padding: 32px 24px !important; }
+  .impact-cards .card .impact-number { font-size: 36px !important; }
+
+  /* Forms: reduce padding on mobile */
+  #contactForm { padding: 24px !important; }
 }
 
 /* ===== Map Specific ===== */
