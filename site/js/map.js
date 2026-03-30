@@ -64,6 +64,7 @@ function onEachFeature(feature, layer) {
       <p class="rep-name">${p.rep_name}</p>
       <p class="party-label ${p.party === 'D' ? 'dem' : 'rep'}">${p.party === 'D' ? 'Democrat' : 'Republican'}</p>
       <p style="margin:4px 0;font-size:13px;">${p.email}</p>
+      ${p.phone ? `<p style="margin:4px 0;font-size:13px;"><a href="tel:${p.phone}" style="color:#26385E;">${p.phone}</a></p>` : ''}
       <button onclick="selectRep(${p.district}, '${p.rep_name.replace(/'/g, "\\'")}', '${p.party}', '${p.email}')"
         style="margin-top:8px;background:#FF344C;color:#fff;border:none;border-radius:40px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;width:100%;">
         Select as my Representative
