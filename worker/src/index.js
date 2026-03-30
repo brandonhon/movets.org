@@ -419,6 +419,12 @@ export default {
   async fetch(request, env) {
     const origin = env.ALLOWED_ORIGIN || 'https://movets.org';
 
+    // Geo-block: allow only US IPs
+    const country = request.headers.get('CF-IPCountry');
+    if (country && country !== 'US') {
+      return json({ error: 'This service is only available in the United States.' }, 403, origin);
+    }
+
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
