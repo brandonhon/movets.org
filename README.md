@@ -7,7 +7,7 @@ A multi-page static website supporting Missouri HB2089 — the Disabled Veterans
 - **Interactive district map** — All 163 Missouri House districts colored by party (R/D)
 - **Contact form** — Send messages to representatives via Cloudflare Worker + Brevo
 - **Newsletter** — Footer subscribe form + CLI send script
-- **Anti-spam** — 1 email per sender, 4 per IP, US-only geo-block, Turnstile CAPTCHA
+- **Anti-spam** — 1 email per sender, 4 per IP, Turnstile CAPTCHA, repEmail domain validation
 - **SEO** — Open Graph, Twitter Cards, canonical URLs, JSON-LD, sitemap
 
 ## Tech Stack
@@ -164,7 +164,6 @@ make clean               # Remove build artifacts
 |---------|---------------|
 | 1 email per sender | `UNIQUE` constraint on `sender_email` in D1 |
 | 4 emails per IP | D1 count query before send |
-| US-only geo-block | `request.cf.country` check in Worker |
 | CAPTCHA | Cloudflare Turnstile (server-side verification) |
 | Rep email validation | Must be `@house.mo.gov` domain |
 | Honeypot field | Hidden form field for bot traps |

@@ -423,12 +423,6 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
-    // US-only geo-block (Cloudflare provides country via request.cf)
-    const country = request.cf?.country;
-    if (country && country !== 'US') {
-      return json({ error: 'This service is only available within the United States.' }, 403, origin);
-    }
-
     if (request.method !== 'POST') {
       return json({ error: 'Method not allowed.' }, 405, origin);
     }
