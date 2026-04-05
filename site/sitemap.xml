@@ -30,4 +30,24 @@
     <lastmod>2026-03-29</lastmod>
     <priority>0.5</priority>
   </url>
+  <url>
+    <loc>https://movets.org/news/index.html</loc>
+    <lastmod>2026-04-05</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://movets.org/news/2026-04-05-bipartisan-support.html</loc>
+    <lastmod>2026-04-05</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://movets.org/news/2026-04-05-how-the-exemption-works.html</loc>
+    <lastmod>2026-04-05</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://movets.org/news/2026-04-05-welcome.html</loc>
+    <lastmod>2026-04-05</lastmod>
+    <priority>0.7</priority>
+  </url>
 </urlset>
