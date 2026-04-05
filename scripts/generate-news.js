@@ -178,7 +178,9 @@ function generateIndex(posts) {
         <a href="../take-action.html">Take Action</a>
         <a href="index.html" class="active">News</a>
         <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
         <a href="../impact.html">Our Impact</a>
+        <a href="../data-sources.html">Data &amp; Sources</a>
       </div>
       <a href="../take-action.html" class="btn btn-primary btn-sm nav-cta">Take Action</a>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
