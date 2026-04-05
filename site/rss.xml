@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="rss.xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MoVets.org — Missouri Disabled Veterans Homestead Exemption</title>
+    <link>https://movets.org/</link>
+    <atom:link href="https://movets.org/rss.xml" rel="self" type="application/rss+xml" />
+    <description>News and updates on Missouri HB2089 — fair property tax relief for disabled veterans.</description>
+    <language>en-us</language>
+    <copyright>MoVets.org — Non-partisan veteran advocacy</copyright>
+    <lastBuildDate>Sun, 05 Apr 2026 22:39:39 GMT</lastBuildDate>
+    <ttl>1440</ttl>
+    <image>
+      <url>https://movets.org/og-image.png</url>
+      <title>MoVets.org</title>
+      <link>https://movets.org/</link>
+    </image>
+    <item>
+      <title>Veteran Tax Relief Gains Bipartisan Support</title>
+      <link>https://movets.org/news/2026-04-05-bipartisan-support.html</link>
+      <guid isPermaLink="true">https://movets.org/news/2026-04-05-bipartisan-support.html</guid>
+      <pubDate>Sun, 05 Apr 2026 17:00:00 GMT</pubDate>
+      <description>HB2089 and companion bills authorizing the Missouri Disabled Veterans Homestead Exemption are gaining bipartisan momentum in Jefferson City.</description>
+    </item>
+    <item>
+      <title>How the Exemption Works</title>
+      <link>https://movets.org/news/2026-04-05-how-the-exemption-works.html</link>
+      <guid isPermaLink="true">https://movets.org/news/2026-04-05-how-the-exemption-works.html</guid>
+      <pubDate>Sun, 05 Apr 2026 16:00:00 GMT</pubDate>
+      <description>A plain-language breakdown of how HB2089 would provide tiered property tax relief based on VA disability rating.</description>
+    </item>
+    <item>
+      <title>Welcome to MoVets.org</title>
+      <link>https://movets.org/news/2026-04-05-welcome.html</link>
+      <guid isPermaLink="true">https://movets.org/news/2026-04-05-welcome.html</guid>
+      <pubDate>Sun, 05 Apr 2026 15:00:00 GMT</pubDate>
+      <description>A non-partisan, grassroots effort to help Missouri&apos;s disabled veterans get fair property tax relief through HB2089.</description>
+    </item>
+  </channel>
+</rss>

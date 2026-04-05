@@ -1,0 +1,29 @@
+{
+  "comment": "News posts manifest. Newest first. See docs/NEWS.md for how to add a post.",
+  "posts": [
+    {
+      "slug": "2026-04-05-bipartisan-support",
+      "filename": "2026-04-05-bipartisan-support.html",
+      "title": "Veteran Tax Relief Gains Bipartisan Support",
+      "description": "HB2089 and companion bills authorizing the Missouri Disabled Veterans Homestead Exemption are gaining bipartisan momentum in Jefferson City.",
+      "pubDate": "2026-04-05T12:00:00-05:00",
+      "tag": "Policy Update"
+    },
+    {
+      "slug": "2026-04-05-how-the-exemption-works",
+      "filename": "2026-04-05-how-the-exemption-works.html",
+      "title": "How the Exemption Works",
+      "description": "A plain-language breakdown of how HB2089 would provide tiered property tax relief based on VA disability rating.",
+      "pubDate": "2026-04-05T11:00:00-05:00",
+      "tag": "Explainer"
+    },
+    {
+      "slug": "2026-04-05-welcome",
+      "filename": "2026-04-05-welcome.html",
+      "title": "Welcome to MoVets.org",
+      "description": "A non-partisan, grassroots effort to help Missouri's disabled veterans get fair property tax relief through HB2089.",
+      "pubDate": "2026-04-05T10:00:00-05:00",
+      "tag": "Announcement"
+    }
+  ]
+}

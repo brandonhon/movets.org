@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npx tailwindcss -i ./tailwind.css -o ./site/css/styles.css --watch",
     "build": "npx tailwindcss -i ./tailwind.css -o ./site/css/styles.css --minify",
-    "build:deploy": "npm run build && node scripts/inject-env.js",
+    "build:deploy": "npm run build && node scripts/generate-news.js && node scripts/inject-env.js",
+    "generate:news": "node scripts/generate-news.js",
     "check-links": "node scripts/check-links.js",
     "serve": "npx serve site -l 8080"
   },
